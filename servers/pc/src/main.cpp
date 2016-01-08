@@ -6,5 +6,9 @@ using namespace hd::filesystem;
 
 int main()
 {
+    auto list = FilesystemEntryListProvider::getFilesystemEntryList( "C:/moje/programowanie/c++/HomeDisc/servers/pc/test" );
+
+    std::cout << list;
+
     return 0;
 }

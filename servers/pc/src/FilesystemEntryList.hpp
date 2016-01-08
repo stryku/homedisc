@@ -10,7 +10,6 @@ namespace hd
     {
         class FilesystemEntryList
         {
-        
         private:
             std::unordered_set<FilesystemEntry> entries;
 
@@ -18,6 +17,14 @@ namespace hd
             void add( const FilesystemEntry &entry )
             {
                 entries.insert( entry );
+            }
+
+            friend std::ostream& operator <<( std::ostream &out, const FilesystemEntryList &list )
+            {
+                for( const auto &entry : list.entries )
+                    out << entry << "\n\n";
+
+                return out;
             }
         };
     }
