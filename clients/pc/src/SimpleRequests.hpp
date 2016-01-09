@@ -11,7 +11,7 @@ namespace hd
     {
         namespace SimpleRequests
         {
-            auto simpleReq( const std::string &content )
+            auto simpleReq( std::string content )
             {
                 return std::make_shared<zmq::message_t>( content.begin(), content.end() );
             }
@@ -21,9 +21,19 @@ namespace hd
                 return simpleReq( "<msg><type>LIST_REQ</type></msg>" );
             }
 
-            auto file()
+            auto file( const std::string &path )
             {
-                return simpleReq( "<msg><type>FILE_REQ</type></msg>" );
+                return simpleReq( "<msg><type>FILE_REQ</type><path>" + path + "</path></msg>" );
+            }
+
+            auto remove( const std::string &path )
+            {
+                return simpleReq( "<msg><type>REMOVE</type><path>" + path + "</path></msg>" );
+            }
+
+            auto newFile( const std::string &path, const std::string &base64 )
+            {
+                return simpleReq( "<msg><type>NEW_FILE</type><path>" + path + "</path><file>" + base64 + "</file></msg>" );
             }
         }
     }
