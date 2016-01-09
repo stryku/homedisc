@@ -12,7 +12,7 @@ INITIALIZE_EASYLOGGINGPP
 
 int main()
 {
-    Server server;
+    Server server; 
     hd::communication::RequestHandler reqHandler;
 
     server.run( reqHandler.getHandleFunction() );
