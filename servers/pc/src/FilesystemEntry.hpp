@@ -71,6 +71,11 @@ namespace hd
                     && type == other.type;
             }
 
+            bool olderThan( const FilesystemEntry &other ) const
+            {
+                return modificationDate < other.modificationDate;
+            }
+
             std::string stringType() const
             {
                 return ( type == FilesystemEntryType::FILE ? "FILE" : "DIR" );

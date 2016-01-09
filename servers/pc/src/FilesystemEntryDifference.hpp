@@ -11,10 +11,12 @@ namespace hd
 
         enum class DifferenceType
         {
-            NEW,
-            DELETED,
+            NEW_LOCALLY,
+            NEW_OTHER,
+            DELETED_LOCALLY,
+            DELETED_OTHER,
             NAME_CHANGED,
-            CHANGED_ON_SERVER,
+            CHANGED_OTHER,
             CHANGED_LOCALLY
         };
 
@@ -27,10 +29,12 @@ namespace hd
             {
                 switch( type )
                 {
-                    case DifferenceType::NEW: return "NEW"; break;
-                    case DifferenceType::DELETED: return "DELETED"; break;
+                    case DifferenceType::NEW_LOCALLY: return "NEW_LOCALLY"; break;
+                    case DifferenceType::NEW_OTHER: return "NEW_OTHER"; break;
+                    case DifferenceType::DELETED_LOCALLY: return "DELETED_LOCALLY"; break;
+                    case DifferenceType::DELETED_OTHER: return "DELETED_OTHER"; break;
                     case DifferenceType::NAME_CHANGED: return "NAME_CHANGED"; break;
-                    case DifferenceType::CHANGED_ON_SERVER: return "CHANGED_ON_SERVER"; break;
+                    case DifferenceType::CHANGED_OTHER: return "CHANGED_OTHER"; break;
                     case DifferenceType::CHANGED_LOCALLY: return "CHANGED_LOCALLY"; break;
                     default: return "UNKNOW"; break;
                 }

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "FilesystemEntry.hpp"
+#include "FilesystemEntryDifference.hpp"
 
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/xml_parser.hpp>
@@ -9,6 +10,7 @@
 #include <sstream>
 #include <unordered_map>
 #include <memory>
+#include <set>
 
 namespace hd
 {
@@ -17,10 +19,7 @@ namespace hd
         class FilesystemEntryList
         {
         private:
-            typedef std::shared_ptr<FilesystemEntry> FilesystemEntryPtr;
-
-            std::unordered_map<std::string, FilesystemEntryPtr> entriesByMd5;
-            std::unordered_map<fs::path, FilesystemEntryPtr> entriesByPath;
+            std::unordered_map<fs::path, FilesystemEntry> entriesByPath, oldEntries;
 
         public:
             void add( const FilesystemEntry &entry )
@@ -70,16 +69,16 @@ namespace hd
                 /*BOOST_FOREACH( const std::string &name, m_modules )
                     tree.add( "debug.modules.module", name );*/
 
-                for( const auto &entryPair : entriesByMd5 )
+                for( const auto &entryPair : entriesByPath )
                 {
                     const auto &entry = entryPair.second;
 
                     pt::ptree entryTree;
 
-                    entryTree.put( "path", entry->path.string() );
-                    entryTree.put( "md5", entry->md5 );
-                    entryTree.put( "moddate", entry->modificationDate );
-                    entryTree.put( "type", entry->stringType() );
+                    entryTree.put( "path", entry.path.string() );
+                    entryTree.put( "md5", entry.md5 );
+                    entryTree.put( "moddate", entry.modificationDate );
+                    entryTree.put( "type", entry.stringType() );
 
                     tree.add_child( "fel.entry", entryTree );
                 }
@@ -88,6 +87,90 @@ namespace hd
                 pt::write_xml( oss, tree );
 
                 return oss.str();
+            }
+
+            auto findPath( const fs::path &path ) const
+            {
+                return entriesByPath.find( path );
+            }
+
+            bool pathExists( const fs::path &path ) const
+            {
+                return ( entriesByPath.find( path ) != entriesByPath.end() );
+            }
+
+            auto end() const
+            {
+                return entriesByPath.end();
+            }
+
+            std::vector<FilesystemEntryDifference> getDifferences( const FilesystemEntryList &other )
+            {
+                std::vector<FilesystemEntryDifference> results;
+
+                for( const auto &entryPair : entriesByPath )
+                {
+                    const auto &entry = entryPair.second;
+
+                    const auto &entryOther = other.findPath( entry.path );
+
+                    if( entryOther != other.end() ) // jak jest sciezka i tu i tu
+                    {
+                        if( entry.md5 != entryOther->second.md5 ) // jak inne md5
+                        {
+                            if( entry.olderThan( entryOther->second ) ) // jak nasze starsze
+                                results.push_back( { entry.path, DifferenceType::CHANGED_OTHER } );
+                            else // nasze mlodsze
+                                results.push_back( { entry.path, DifferenceType::CHANGED_LOCALLY } );
+                        }
+                    }
+                    else // jak nie ma sciezki na serwerze
+                    {
+                        if( oldEntries.find( entry.path ) == oldEntries.end() ) // jak u nas w starych nie bylo
+                            results.push_back( { entry.path, DifferenceType::NEW_LOCALLY } );
+                        else // jak byla
+                            results.push_back( { entry.path, DifferenceType::DELETED_OTHER } );
+                    }
+                    //jest sciezka i takie samo md5 => bez zmian
+                    //jest sciezka i inne md5
+                        //data other starsza => CHANGED_OTHER
+                        //data other mniejsza => changed_locally
+                    //W OTHER nie ma sciezki
+                        //dwie opcje
+                        //albo u nas dodano
+                        //albo na serwerze usunieto
+                        //jak w starym u nas nie ma
+                            //u nas dodano
+                        //jak jest
+                            //na serwerze usunieto
+                        //new_locally
+                }
+
+                for( const auto &entryPair : other.entriesByPath )
+                {
+                    const auto &entryOther = entryPair.second;
+                    const auto entry = findPath( entryOther.path );
+
+                    if( entry == end() ) // jak sciezki z serwera nie ma u nas
+                    {
+                        if( oldEntries.find(entryOther.path) == oldEntries.end()) // jak u nas w starych nie ma
+                            results.push_back( { entryOther.path, DifferenceType::NEW_OTHER } );
+                        else // jak u nas w starych jest
+                            results.push_back( { entryOther.path, DifferenceType::DELETED_LOCALLY } );
+                    }
+                }
+                //for other
+                    //nie ma sciezki u nas
+                        //dwie opcje
+                        //albo na serwerze doszlo
+                        //albo u nas usunieto
+                        //trzeba trzymac nasze jedno stare
+                        //jak u nas w starym nie ma
+                            //doszlo na serwerze
+                        //jak jest
+                            //usunieto u nas
+
+                return results;
             }
 
             friend std::ostream& operator <<( std::ostream &out, const FilesystemEntryList &list )
