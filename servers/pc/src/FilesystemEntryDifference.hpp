@@ -42,7 +42,7 @@ namespace hd
 
             friend std::ostream& operator<<( std::ostream &out, const FilesystemEntryDifference &dif )
             {
-                out << "path: " << dif.path << "\n" \
+                out << "path: " << dif.entryPath << "\n" \
                     << "type: " << dif.stringType();
 
                 return out;

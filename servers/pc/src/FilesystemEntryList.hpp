@@ -24,10 +24,7 @@ namespace hd
         public:
             void add( const FilesystemEntry &entry )
             {
-                auto ptr = std::make_shared<FilesystemEntry>( entry );
-
-                entriesByMd5[entry.md5] = ptr;
-                entriesByPath[entry.path] = ptr;
+                entriesByPath[entry.path] = entry;
             }
 
             void fromXml( const std::string &xmlData )
@@ -49,7 +46,7 @@ namespace hd
                 }
             }
 
-            std::string toXml()
+            std::string toXml() const 
             {
                 namespace pt = boost::property_tree;
 
@@ -89,7 +86,7 @@ namespace hd
                 return oss.str();
             }
 
-            auto findPath( const fs::path &path ) const
+            const auto findPath( const fs::path &path ) const
             {
                 return entriesByPath.find( path );
             }
@@ -99,12 +96,29 @@ namespace hd
                 return ( entriesByPath.find( path ) != entriesByPath.end() );
             }
 
-            auto end() const
+            const auto end() const
             {
                 return entriesByPath.end();
             }
 
-            std::vector<FilesystemEntryDifference> getDifferences( const FilesystemEntryList &other )
+            void copyToOld()
+            {
+                oldEntries = entriesByPath;
+            }
+
+            void generate( const std::string &path )
+            {
+                entriesByPath.clear();
+
+                if( fs::exists( path )
+                    && fs::is_directory( path ) )
+                {
+                    for( auto& p : fs::recursive_directory_iterator( path ) )
+                        add( FilesystemEntry::create( p, path ) );
+                }
+            }
+
+            std::vector<FilesystemEntryDifference> getDifferences( const FilesystemEntryList &other ) const 
             {
                 std::vector<FilesystemEntryDifference> results;
 
@@ -112,13 +126,14 @@ namespace hd
                 {
                     const auto &entry = entryPair.second;
 
-                    const auto &entryOther = other.findPath( entry.path );
 
-                    if( entryOther != other.end() ) // jak jest sciezka i tu i tu
+                    if( other.pathExists( entry.path ) )// jak jest sciezka i tu i tu
                     {
-                        if( entry.md5 != entryOther->second.md5 ) // jak inne md5
+                        const auto entryOther = other.findPath( entry.path )->second;
+
+                        if( entry.md5 != entryOther.md5 ) // jak inne md5
                         {
-                            if( entry.olderThan( entryOther->second ) ) // jak nasze starsze
+                            if( entry.olderThan( entryOther ) ) // jak nasze starsze
                                 results.push_back( { entry.path, DifferenceType::CHANGED_OTHER } );
                             else // nasze mlodsze
                                 results.push_back( { entry.path, DifferenceType::CHANGED_LOCALLY } );
@@ -175,8 +190,8 @@ namespace hd
 
             friend std::ostream& operator <<( std::ostream &out, const FilesystemEntryList &list )
             {
-                for( const auto &entry : list.entriesByMd5 )
-                    out << *( entry.second ) << "\n\n";
+                for( const auto &entry : list.entriesByPath )
+                    out << entry.second << "\n\n";
 
                 return out;
             }

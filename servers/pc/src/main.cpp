@@ -12,6 +12,27 @@ int main()
 
     std::cout << list;
 
+    list.copyToOld();
+
+    auto list2 = FilesystemEntryListProvider::getFilesystemEntryList( "C:/moje/programowanie/c++/HomeDisc/servers/pc/testnew" );
+
+    std::cout << list;
+
+    auto dif = list.getDifferences( list2 );
+
+
+
+    std::cout << "\n---------------------\n\n\n";
+
+    for( auto a : dif )
+    {
+        std::cout << a << "\n\n";
+    }
+
+
+
+
+
     auto xml = list.toXml();
 
     FilesystemEntryList l2;
