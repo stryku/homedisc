@@ -1,11 +1,22 @@
 #include "FilesystemEntryListProvider.hpp"
 
+#include <router/Server.hpp>
+#include "RequestHandler.hpp"
+
 #include <iostream>
 
 using namespace hd::filesystem;
 
+
+INITIALIZE_EASYLOGGINGPP
+
 int main()
 {
+    Server server;
+    hd::communication::RequestHandler reqHandler;
+
+    server.run( reqHandler.getHandleFunction() );
+
     auto list = FilesystemEntryListProvider::getFilesystemEntryList( "C:/moje/programowanie/c++/HomeDisc/servers/pc/test" );
     //auto list = FilesystemEntryListProvider::getFilesystemEntryList( "C:/moje/lib/Boost/boost_1_59_0" );
 
