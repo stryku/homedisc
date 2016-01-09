@@ -7,6 +7,8 @@
 
 #include <unordered_set>
 #include <sstream>
+#include <unordered_map>
+#include <memory>
 
 namespace hd
 {
@@ -15,12 +17,18 @@ namespace hd
         class FilesystemEntryList
         {
         private:
-            std::unordered_set<FilesystemEntry> entries;
+            typedef std::shared_ptr<FilesystemEntry> FilesystemEntryPtr;
+
+            std::unordered_map<std::string, FilesystemEntryPtr> entriesByMd5;
+            std::unordered_map<fs::path, FilesystemEntryPtr> entriesByPath;
 
         public:
             void add( const FilesystemEntry &entry )
             {
-                entries.insert( entry );
+                auto ptr = std::make_shared<FilesystemEntry>( entry );
+
+                entriesByMd5[entry.md5] = ptr;
+                entriesByPath[entry.path] = ptr;
             }
 
             void fromXml( const std::string &xmlData )
@@ -62,14 +70,16 @@ namespace hd
                 /*BOOST_FOREACH( const std::string &name, m_modules )
                     tree.add( "debug.modules.module", name );*/
 
-                for( const auto &entry : entries )
+                for( const auto &entryPair : entriesByMd5 )
                 {
+                    const auto &entry = entryPair.second;
+
                     pt::ptree entryTree;
 
-                    entryTree.put( "path", entry.path.string() );
-                    entryTree.put( "md5", entry.md5 );
-                    entryTree.put( "moddate", entry.modificationDate );
-                    entryTree.put( "type", entry.stringType() );
+                    entryTree.put( "path", entry->path.string() );
+                    entryTree.put( "md5", entry->md5 );
+                    entryTree.put( "moddate", entry->modificationDate );
+                    entryTree.put( "type", entry->stringType() );
 
                     tree.add_child( "fel.entry", entryTree );
                 }
@@ -82,8 +92,8 @@ namespace hd
 
             friend std::ostream& operator <<( std::ostream &out, const FilesystemEntryList &list )
             {
-                for( const auto &entry : list.entries )
-                    out << entry << "\n\n";
+                for( const auto &entry : list.entriesByMd5 )
+                    out << *( entry.second ) << "\n\n";
 
                 return out;
             }

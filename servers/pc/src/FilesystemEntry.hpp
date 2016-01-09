@@ -86,19 +86,17 @@ namespace hd
                 return out;
             }
         };
-
-        
     }
 }
 
 namespace std
 {
     template <>
-    struct hash<hd::filesystem::FilesystemEntry>
+    struct hash<std::experimental::filesystem::path>
     {
-        size_t operator () ( const hd::filesystem::FilesystemEntry &e ) const
+        size_t operator () ( const std::experimental::filesystem::path &p ) const
         {
-            return e.hash();
+            return std::hash<std::string>{}( p.string() );
         }
     };
 }
