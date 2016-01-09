@@ -10,5 +10,7 @@ int main()
 
     std::cout << list;
 
+    std::cout << list.toXml();
+
     return 0;
 }

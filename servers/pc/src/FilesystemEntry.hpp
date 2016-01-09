@@ -71,11 +71,16 @@ namespace hd
                     && type == other.type;
             }
 
+            std::string stringType() const
+            {
+                return ( type == FilesystemEntryType::FILE ? "FILE" : "DIR" );
+            }
+
             friend std::ostream& operator<<( std::ostream &out, const FilesystemEntry &entry )
             {
                 out << "path: " << entry.path << "\n" \
                     << "md5: " << entry.md5 << "\n" \
-                    << "type: " << ( entry.type == FilesystemEntryType::FILE ? "FILE" : "DIR" ) << "\n" \
+                    << "type: " << entry.stringType() << "\n" \
                     << "mod time: " << entry.modificationDate;
 
                 return out;
