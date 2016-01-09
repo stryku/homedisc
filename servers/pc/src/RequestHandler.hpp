@@ -1,6 +1,7 @@
 #pragma once
 
 #include "FilesListResponse.hpp"
+#include "FileResponse.hpp"
 
 #include <router/log.h>
 
@@ -55,6 +56,10 @@ namespace hd
                     case MessageType::LIST_REQ: 
                         LOG( "LIST_REQ" );
                         return  FilesListResponse( "C:/moje/programowanie/c++/HomeDisc/servers/pc/test" ).toZmqMessage();
+
+                    case MessageType::FILE_REQ:
+                        LOG( "FILE_REQ" );
+                        return  FileResponse( "C:/moje/programowanie/c++/HomeDisc/servers/pc/test" ).toZmqMessage();
 
                     default:
                     break;
