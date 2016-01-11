@@ -76,6 +76,20 @@ namespace hd
                 return modificationDate < other.modificationDate;
             }
 
+            bool operator<( const FilesystemEntry &rhs ) const
+            {
+                if( type != rhs.type )
+                {
+                    if( type == FilesystemEntryType::DIRECTORY && rhs.type == FilesystemEntryType::FILE )
+                        return true;
+
+                    if( type == FilesystemEntryType::FILE && rhs.type == FilesystemEntryType::DIRECTORY )
+                        return false;
+                }
+
+                return path.string().length() < rhs.path.string().length();
+            }
+
             std::string stringType() const
             {
                 return ( type == FilesystemEntryType::FILE ? "FILE" : "DIR" );
