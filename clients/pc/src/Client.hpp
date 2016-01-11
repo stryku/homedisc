@@ -22,12 +22,12 @@ namespace hd
 
             void run()
             {
-                auto listRequest = SimpleRequests::fileList();
 
                 communicator.connect( endpoint );
 
                 while( 1 )
                 {
+                    auto listRequest = SimpleRequests::fileList();
                     communicator.send( listRequest );
 
                     auto response = communicator.recv();

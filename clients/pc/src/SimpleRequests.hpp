@@ -13,6 +13,7 @@ namespace hd
         {
             auto simpleReq( std::string content )
             {
+                content += '\0';
                 return std::make_shared<zmq::message_t>( content.begin(), content.end() );
             }
 

@@ -17,9 +17,6 @@ namespace hd
 
             void connect( const std::string &newEndpoint )
             {
-                if( socket.connected() )
-                    socket.disconnect( endpoint );
-
                 socket.connect( newEndpoint );
                 endpoint = newEndpoint;
             }

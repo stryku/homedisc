@@ -29,11 +29,11 @@ namespace hd
             auto getDifferences( const std::string &serverFilesListXml )
             {
                 filesystem::FilesystemEntryList serverList;
-                auto ourList = filesystem::FilesystemEntryListProvider::getFilesystemEntryList( "C:/moje/programowanie/c++/HomeDisc/clients/pc/test" );//todo
+                filesystemEntryList.generate( "C:/moje/programowanie/c++/HomeDisc/clients/pc/testnew" );//todo
 
                 serverList.fromXml( serverFilesListXml );
 
-                return ourList.getDifferences( serverList );
+                return filesystemEntryList.getDifferences( serverList );
             }
 
             void saveFile( ZmqMessagePtr msgWithFile )
@@ -41,14 +41,14 @@ namespace hd
                 namespace pt = boost::property_tree;
                 pt::ptree tree;
                 std::string strMsg( static_cast<const char*>( msgWithFile->data() ) );
-                std::string path( "C:/moje/programowanie/c++/HomeDisc/clients/pc/test" );//todo
+                std::string path( "C:/moje/programowanie/c++/HomeDisc/clients/pc/testnew" );//todo
                 base64::decoder decoder;
 
                 pt::read_xml( std::istringstream( strMsg ), tree );
 
                 path += tree.get_child( "resp.path" ).get_value( "" );
 
-                decoder.decode( std::istringstream( tree.get_child( "resp.file" ).get_value( "" ) ), std::ofstream( path ) );
+                decoder.decode( std::istringstream( tree.get_child( "resp.file" ).get_value( "" ) ), std::ofstream( path, std::ios::binary ) );
             }
 
             void downloadFile( const std::string &path )
@@ -64,11 +64,11 @@ namespace hd
 
             void uploadFile( const std::string &path )
             {
-                auto fullpath = "C:/moje/programowanie/c++/HomeDisc/clients/pc/test" + path; //todo
+                auto fullpath = "C:/moje/programowanie/c++/HomeDisc/clients/pc/testnew" + path; //todo
                 base64::encoder encoder;
                 std::ostringstream oss;
                 
-                encoder.encode( std::ifstream( fullpath ), oss );
+                encoder.encode( std::ifstream( fullpath, std::ios::binary ), oss );
 
                 auto msg = SimpleRequests::newFile( path, oss.str() );
 
@@ -80,7 +80,7 @@ namespace hd
 
             void deleteFile( const std::string &path )
             {
-                auto fullpath = "C:/moje/programowanie/c++/HomeDisc/clients/pc/test" + path; //todo
+                auto fullpath = "C:/moje/programowanie/c++/HomeDisc/clients/pc/testnew" + path; //todo
 
                 std::experimental::filesystem::remove( fullpath );
             }
@@ -125,7 +125,9 @@ namespace hd
         public:
             ResponseHandler( Communicator &communicator ) :
                 communicator( communicator )
-            {}
+            {
+                filesystemEntryList.generate( "C:/moje/programowanie/c++/HomeDisc/clients/pc/testnew" );
+            }
 
             void handle( ZmqMessagePtr msg )
             {
@@ -134,10 +136,13 @@ namespace hd
                 auto differences = getDifferences( strMsg );
 
                 handleDifferences( differences );
+
+                filesystemEntryList.copyToOld();
             }
 
         private:
             Communicator &communicator;
+            filesystem::FilesystemEntryList filesystemEntryList;
         };
     }
 }

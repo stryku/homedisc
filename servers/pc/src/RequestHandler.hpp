@@ -2,6 +2,7 @@
 
 #include "FilesListResponse.hpp"
 #include "FileResponse.hpp"
+#include <FilesystemAffect.hpp>
 
 #include <router/log.h>
 
@@ -26,6 +27,7 @@ namespace hd
                 LIST_REQ,
                 FILE_REQ,
                 NEW_FILE,
+                REMOVE,
 
                 UNDEF
             };
@@ -37,11 +39,19 @@ namespace hd
                 if( strType == "LIST_REQ" ) return MessageType::LIST_REQ;
                 if( strType == "FILE_REQ" ) return MessageType::FILE_REQ;
                 if( strType == "NEW_FILE" ) return MessageType::NEW_FILE;
+                if( strType == "REMOVE" ) return MessageType::REMOVE;
 
                 return MessageType::UNDEF;
             }
 
         public:
+
+            auto handleFileRequest( const pt::ptree &tree )
+            {
+                auto relativePath = tree.get_child( "msg.path" ).get_value( "" );
+
+                return FileResponse( relativePath ).toZmqMessage();
+            }
 
             auto handle( const zmq::message_t &msg )
             {
@@ -59,8 +69,16 @@ namespace hd
 
                     case MessageType::FILE_REQ:
                         LOG( "FILE_REQ" );
-                        return  FileResponse( "C:/moje/programowanie/c++/HomeDisc/servers/pc/test" ).toZmqMessage();
+                        return  handleFileRequest( tree );
 
+                    case MessageType::NEW_FILE:
+                        filesystem::FilesystemAffect::createFileFromBase64( "C:/moje/programowanie/c++/HomeDisc/servers/pc/test" + tree.get_child( "msg.path" ).get_value( "" ),// todo
+                                                                            tree.get_child( "msg.file" ).get_value( "" ) );
+                    break;
+
+                    case MessageType::REMOVE:
+                        std::experimental::filesystem::remove( "C:/moje/programowanie/c++/HomeDisc/servers/pc/test" + tree.get_child( "msg.path" ).get_value( "" ) );// todo
+                    break;
                     default:
                     break;
                 }

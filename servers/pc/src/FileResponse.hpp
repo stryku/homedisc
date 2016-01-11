@@ -31,15 +31,21 @@ namespace hd
 
             auto toZmqMessage() const
             {
-                std::ifstream file( "C:/moje/programowanie/c++/Jarvis/src/Workers.h" );//todo
+                const char *folder = "C:/moje/programowanie/c++/HomeDisc/servers/pc/test";//todo
+
+                auto p = std::experimental::filesystem::path( folder ) / relativePath;
+
+                std::ifstream file( std::experimental::filesystem::path(folder) / relativePath, std::ios::binary );//todo
                 base64::encoder encoder;
                 boost::property_tree::ptree tree;
                 std::ostringstream oss;
+
                 encoder.encode( file, oss );
 
                 tree.add( "resp.path", relativePath.string() );
                 tree.add( "resp.file", oss.str() );
 
+                oss.str( "" );
                 oss.clear();
 
                 boost::property_tree::write_xml( oss, tree );
