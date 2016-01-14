@@ -103,6 +103,7 @@ namespace hd
                     {
                         case filesystem::DifferenceType::CHANGED_OTHER:
                         case filesystem::DifferenceType::NEW_OTHER:
+                            
                             downloadFile( diff.entryPath.string() );
                         break;
 

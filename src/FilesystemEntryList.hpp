@@ -8,9 +8,10 @@
 
 #include <unordered_set>
 #include <sstream>
-#include <unordered_map>
+#include <map>
 #include <memory>
 #include <set>
+#include <algorithm>
 
 namespace hd
 {
@@ -19,7 +20,7 @@ namespace hd
         class FilesystemEntryList
         {
         private:
-            std::unordered_map<fs::path, FilesystemEntry> entriesByPath, oldEntries;
+            std::map<fs::path, FilesystemEntry> entriesByPath, oldEntries;
 
         public:
             void add( const FilesystemEntry &entry )
@@ -53,6 +54,12 @@ namespace hd
                 pt::ptree tree;
 
                 std::ostringstream oss;
+                std::set<FilesystemEntry> sorted;
+
+                for( const auto &pair : entriesByPath )
+                    sorted.insert( pair.second );
+
+
 
                 // Put the simple values into the tree. The integer is automatically
                 // converted to a string. Note that the "debug" node is automatically
@@ -66,10 +73,8 @@ namespace hd
                 /*BOOST_FOREACH( const std::string &name, m_modules )
                     tree.add( "debug.modules.module", name );*/
 
-                for( const auto &entryPair : entriesByPath )
+                for( const auto &entry : sorted )
                 {
-                    const auto &entry = entryPair.second;
-
                     pt::ptree entryTree;
 
                     entryTree.put( "path", entry.path.string() );
