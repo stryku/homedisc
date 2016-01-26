@@ -54,7 +54,8 @@ namespace hd
                 if( file.length() > 0 )
                     content += "<file>" + file + "</file>";
 
-                content += "</request>\0";
+                content += "</request>";
+                content += '\0';
 
                 return content;
             }

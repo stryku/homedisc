@@ -15,10 +15,9 @@ namespace hd
         public:
             typedef std::shared_ptr<zmq::message_t> ZmqMessagePtr;
 
-            void connect( const std::string &newEndpoint )
+            void connect( const std::string &endpoint )
             {
-                socket.connect( newEndpoint );
-                endpoint = newEndpoint;
+                socket.connect( endpoint );
             }
 
             ZmqMessagePtr recv()
@@ -36,7 +35,6 @@ namespace hd
             }
 
         private:
-            std::string endpoint;
             zmq::context_t ctx{ 1 };
             zmq::socket_t socket{ ctx, ZMQ_DEALER };
         };
