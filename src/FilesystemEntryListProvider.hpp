@@ -15,12 +15,12 @@ namespace hd
             {
                 FilesystemEntryList list;
 
-                if( fs::exists( path ) 
+                /*if( fs::exists( path ) 
                     && fs::is_directory( path ) )
                 {
                     for( auto& p : fs::recursive_directory_iterator( path ) )
                         list.add( FilesystemEntry::create( p, path ) );
-                }
+                }*/
 
                 return list;
             }

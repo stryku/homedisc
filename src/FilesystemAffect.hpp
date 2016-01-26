@@ -5,6 +5,7 @@
 #include <sstream>
 #include <fstream>
 #include <string>
+#include <filesystem>
 
 namespace hd
 {
@@ -16,7 +17,13 @@ namespace hd
             {
                 base64::decoder decoder;
 
-                decoder.decode( std::istringstream( b64 ), std::ofstream( path, std::ios::binary ) );
+                decoder.decode( std::istringstream( b64 ), 
+                                std::ofstream( path, std::ios::binary ) );
+            }
+
+            bool createDirectory( const std::string &path )
+            {
+                return std::experimental::filesystem::create_directory( path );
             }
         }
     }

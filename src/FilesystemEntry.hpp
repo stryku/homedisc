@@ -76,9 +76,40 @@ namespace hd
                 return modificationDate < other.modificationDate;
             }
 
-            bool operator<( const FilesystemEntry &rhs ) const
+            static bool compareForSet( const FilesystemEntry &lhs, const FilesystemEntry &rhs )
             {
-                if( type != rhs.type )
+                if( lhs.type != rhs.type || lhs.type == FilesystemEntryType::FILE )
+                {
+                    if( lhs.type == FilesystemEntryType::DIRECTORY && rhs.type == FilesystemEntryType::FILE )
+                        return true;
+
+                    if( lhs.type == FilesystemEntryType::FILE && rhs.type == FilesystemEntryType::DIRECTORY )
+                        return false;
+                }
+
+                return lhs.path.string().length() < rhs.path.string().length();
+            }
+
+            struct SetPred
+            {
+                bool operator()( const FilesystemEntry &lhs, const FilesystemEntry &rhs )
+                {
+                    if( lhs.type != rhs.type || lhs.type == FilesystemEntryType::FILE )
+                    {
+                        if( lhs.type == FilesystemEntryType::DIRECTORY && rhs.type == FilesystemEntryType::FILE )
+                            return true;
+
+                        if( lhs.type == FilesystemEntryType::FILE && rhs.type == FilesystemEntryType::DIRECTORY )
+                            return false;
+                    }
+
+                    return lhs.path.string() < rhs.path.string();
+                }
+            };
+
+            /*bool operator<( const FilesystemEntry &rhs ) const
+            {
+                if( type != rhs.type || type == FilesystemEntryType::FILE )
                 {
                     if( type == FilesystemEntryType::DIRECTORY && rhs.type == FilesystemEntryType::FILE )
                         return true;
@@ -88,7 +119,7 @@ namespace hd
                 }
 
                 return path.string().length() < rhs.path.string().length();
-            }
+            }*/
 
             std::string stringType() const
             {

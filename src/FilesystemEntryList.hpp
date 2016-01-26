@@ -23,9 +23,9 @@ namespace hd
             std::map<fs::path, FilesystemEntry> entriesByPath, oldEntries;
 
         public:
-            void add( const FilesystemEntry &entry )
+            void add( const FilesystemEntry &entry, std::map<fs::path, FilesystemEntry> &addTo )
             {
-                entriesByPath[entry.path] = entry;
+                addTo[entry.path] = entry;
             }
 
             void fromXml( const std::string &xmlData )
@@ -43,7 +43,7 @@ namespace hd
 
                     auto type = ( typeStr == "DIR" ? FilesystemEntryType::DIRECTORY : FilesystemEntryType::FILE );
 
-                    add( { path, modDate, md5, type } );
+                    add( { path, modDate, md5, type }, entriesByPath );
                 }
             }
 
@@ -52,9 +52,9 @@ namespace hd
                 namespace pt = boost::property_tree;
 
                 pt::ptree tree;
-
                 std::ostringstream oss;
-                std::set<FilesystemEntry> sorted;
+                std::set<FilesystemEntry,
+                         FilesystemEntry::SetPred> sorted;
 
                 for( const auto &pair : entriesByPath )
                     sorted.insert( pair.second );
@@ -106,20 +106,23 @@ namespace hd
                 return entriesByPath.end();
             }
 
-            void copyToOld()
+            void generateOld( const std::string &path )
             {
-                oldEntries = entriesByPath;
+                generate( path, &oldEntries );
             }
 
-            void generate( const std::string &path )
+            void generate( const std::string &path, std::map<fs::path, FilesystemEntry> *out = nullptr )
             {
-                entriesByPath.clear();
+                if( out == nullptr )
+                    out = &entriesByPath;
+
+                out->clear();
 
                 if( fs::exists( path )
                     && fs::is_directory( path ) )
                 {
                     for( auto& p : fs::recursive_directory_iterator( path ) )
-                        add( FilesystemEntry::create( p, path ) );
+                        add( FilesystemEntry::create( p, path ), *out );
                 }
             }
 
@@ -139,22 +142,32 @@ namespace hd
                         if( entry.md5 != entryOther.md5 ) // jak inne md5
                         {
                             if( entry.olderThan( entryOther ) ) // jak nasze starsze
-                                results.push_back( { entry.path, DifferenceType::CHANGED_OTHER } );
+                                results.push_back( { entry.path, DifferenceType::CHANGED_FILE_REMOTE } );
                             else // nasze mlodsze
-                                results.push_back( { entry.path, DifferenceType::CHANGED_LOCALLY } );
+                                results.push_back( { entry.path, DifferenceType::CHANGED_FILE_LOCALLY } );
                         }
                     }
                     else // jak nie ma sciezki na serwerze
                     {
                         if( oldEntries.find( entry.path ) == oldEntries.end() ) // jak u nas w starych nie bylo
-                            results.push_back( { entry.path, DifferenceType::NEW_LOCALLY } );
+                        {
+                            if( entry.type == FilesystemEntryType::DIRECTORY )
+                                results.push_back( { entry.path, DifferenceType::NEW_DIR_LOCALLY } );
+                            else
+                                results.push_back( { entry.path, DifferenceType::NEW_FILE_LOCALLY } );
+                        }
                         else // jak byla
-                            results.push_back( { entry.path, DifferenceType::DELETED_OTHER } );
+                        {
+                            if( entry.type == FilesystemEntryType::DIRECTORY )
+                                results.push_back( { entry.path, DifferenceType::DELETED_DIR_REMOTE } );
+                            else
+                                results.push_back( { entry.path, DifferenceType::DELETED_FILE_REMOTE } );
+                        }
                     }
                     //jest sciezka i takie samo md5 => bez zmian
                     //jest sciezka i inne md5
-                        //data other starsza => CHANGED_OTHER
-                        //data other mniejsza => changed_locally
+                        //data other starsza => CHANGED_FILE_REMOTE
+                        //data other mniejsza => CHANGED_FILE_LOCALLY
                     //W OTHER nie ma sciezki
                         //dwie opcje
                         //albo u nas dodano
@@ -163,7 +176,7 @@ namespace hd
                             //u nas dodano
                         //jak jest
                             //na serwerze usunieto
-                        //new_locally
+                        //NEW_FILE_LOCALLY
                 }
 
                 for( const auto &entryPair : other.entriesByPath )
@@ -173,10 +186,20 @@ namespace hd
 
                     if( entry == end() ) // jak sciezki z serwera nie ma u nas
                     {
-                        if( oldEntries.find(entryOther.path) == oldEntries.end()) // jak u nas w starych nie ma
-                            results.push_back( { entryOther.path, DifferenceType::NEW_OTHER } );
+                        if( oldEntries.find( entryOther.path ) == oldEntries.end() ) // jak u nas w starych nie ma
+                        {
+                            if( entryOther.type == FilesystemEntryType::DIRECTORY )
+                                results.push_back( { entryOther.path, DifferenceType::NEW_DIR_REMOTE } );
+                            else
+                                results.push_back( { entryOther.path, DifferenceType::NEW_FILE_REMOTE } );
+                        }
                         else // jak u nas w starych jest
-                            results.push_back( { entryOther.path, DifferenceType::DELETED_LOCALLY } );
+                        {
+                            if( entryOther.type == FilesystemEntryType::DIRECTORY )
+                                results.push_back( { entryOther.path, DifferenceType::DELETED_DIR_LOCALLY } );
+                            else
+                                results.push_back( { entryOther.path, DifferenceType::DELETED_FILE_LOCALLY } );
+                        }
                     }
                 }
                 //for other
