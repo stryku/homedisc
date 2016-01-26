@@ -3,6 +3,8 @@
 #include "Communicator.hpp"
 #include <FilesystemEntryList.hpp>
 #include <FilesystemEntryListProvider.hpp>
+#include <MainFolderPath.hpp>
+
 #include <b64/decode.h>
 #include <b64/encode.h>
 
@@ -29,7 +31,7 @@ namespace hd
             auto getDifferences( const std::string &serverFilesListXml )
             {
                 filesystem::FilesystemEntryList serverList;
-                filesystemEntryList.generate( "C:/moje/programowanie/c++/HomeDisc/clients/pc/testnew" );//todo
+                filesystemEntryList.generate( filesystem::getMainFolderPath() );//todo
 
                 serverList.fromXml( serverFilesListXml );
 
@@ -41,7 +43,7 @@ namespace hd
                 namespace pt = boost::property_tree;
                 pt::ptree tree;
                 std::string strMsg( static_cast<const char*>( msgWithFile->data() ) );
-                std::string path( "C:/moje/programowanie/c++/HomeDisc/clients/pc/testnew" );//todo
+                std::string path( filesystem::getMainFolderPath() );//todo
                 base64::decoder decoder;
 
                 pt::read_xml( std::istringstream( strMsg ), tree );
@@ -64,7 +66,7 @@ namespace hd
 
             void uploadFile( const std::string &path )
             {
-                auto fullpath = "C:/moje/programowanie/c++/HomeDisc/clients/pc/testnew" + path; //todo
+                auto fullpath = filesystem::getMainFolderPath() + path; //todo
                 base64::encoder encoder;
                 std::ostringstream oss;
                 
@@ -80,7 +82,7 @@ namespace hd
 
             void deleteFile( const std::string &path )//todo error check
             {
-                auto fullpath = "C:/moje/programowanie/c++/HomeDisc/clients/pc/testnew" + path; //todo
+                auto fullpath = filesystem::getMainFolderPath() + path; //todo
 
                 std::experimental::filesystem::remove( fullpath );
             }
@@ -95,12 +97,12 @@ namespace hd
 
             void createDirectory( const std::string &path )
             {
-                std::experimental::filesystem::create_directory( "C:/moje/programowanie/c++/HomeDisc/clients/pc/testnew" + path );//todo error check
+                std::experimental::filesystem::create_directory( filesystem::getMainFolderPath() + path );//todo error check
             }
 
             void deleteDirectory( const std::string &path )
             {
-                std::experimental::filesystem::remove_all( "C:/moje/programowanie/c++/HomeDisc/clients/pc/testnew" + path );//todo error check
+                std::experimental::filesystem::remove_all( filesystem::getMainFolderPath() + path );//todo error check
             }
 
             void deleteRemoteDirectory( const std::string &path )//TODO move to another method
@@ -167,7 +169,7 @@ namespace hd
             ResponseHandler( Communicator &communicator ) :
                 communicator( communicator )
             {
-                filesystemEntryList.generate( "C:/moje/programowanie/c++/HomeDisc/clients/pc/testnew" );
+                filesystemEntryList.generate( filesystem::getMainFolderPath() );
             }
 
             void handle( ZmqMessagePtr msg )
@@ -178,7 +180,7 @@ namespace hd
 
                 handleDifferences( differences );
 
-                filesystemEntryList.generateOld( "C:/moje/programowanie/c++/HomeDisc/clients/pc/testnew" );
+                filesystemEntryList.generateOld( filesystem::getMainFolderPath() );
             }
 
         private:

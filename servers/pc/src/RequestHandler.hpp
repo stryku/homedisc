@@ -4,6 +4,7 @@
 #include "FileResponse.hpp"
 #include <FilesystemAffect.hpp>
 #include <MessageType.hpp>
+#include <MainFolderPath.hpp>
 
 #include <router/log.h>
 
@@ -50,27 +51,27 @@ namespace hd
                 {
                     case MessageType::LIST_REQ: 
                         LOG( "LIST_REQ" );
-                        return  FilesListResponse( "C:/moje/programowanie/c++/HomeDisc/servers/pc/test" ).toZmqMessage();//todo
+                        return  FilesListResponse( filesystem::getMainFolderPath() ).toZmqMessage();//todo
 
                     case MessageType::FILE_REQ:
                         LOG( "FILE_REQ" );
                         return  handleFileRequest( tree );
 
                     case MessageType::NEW_FILE:
-                        filesystem::FilesystemAffect::createFileFromBase64( "C:/moje/programowanie/c++/HomeDisc/servers/pc/test" + tree.get_child( "request.path" ).get_value( "" ),// todo
+                        filesystem::FilesystemAffect::createFileFromBase64( filesystem::getMainFolderPath() + tree.get_child( "request.path" ).get_value( "" ),// todo
                                                                             tree.get_child( "msg.file" ).get_value( "" ) );
                     break;
 
                     case MessageType::NEW_DIR:
-                    filesystem::FilesystemAffect::createDirectory( "C:/moje/programowanie/c++/HomeDisc/servers/pc/test" + tree.get_child( "request.path" ).get_value( "" ) );// todo
+                    filesystem::FilesystemAffect::createDirectory( filesystem::getMainFolderPath() + tree.get_child( "request.path" ).get_value( "" ) );// todo
                     break;
 
                     case MessageType::REMOVE_FILE:
-                        std::experimental::filesystem::remove( "C:/moje/programowanie/c++/HomeDisc/servers/pc/test" + tree.get_child( "request.path" ).get_value( "" ) );// todo
+                        std::experimental::filesystem::remove( filesystem::getMainFolderPath() + tree.get_child( "request.path" ).get_value( "" ) );// todo
                     break;
 
                     case MessageType::REMOVE_DIR:
-                        std::experimental::filesystem::remove_all( "C:/moje/programowanie/c++/HomeDisc/servers/pc/test" + tree.get_child( "request.path" ).get_value( "" ) );// todo
+                        std::experimental::filesystem::remove_all( filesystem::getMainFolderPath() + tree.get_child( "request.path" ).get_value( "" ) );// todo
                     break;
 
                     default:
