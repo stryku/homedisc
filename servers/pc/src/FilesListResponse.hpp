@@ -27,11 +27,13 @@ namespace hd
 
             auto toZmqMessage() const
             {
-                auto list = filesystem::FilesystemEntryListProvider::getFilesystemEntryList( path.string() );
+                filesystem::FilesystemEntryList list;
+                
+                list.generate( path.string() );
                 auto strXml = list.toXml() + '\0';
 
-
-                LOG( strXml );
+                std::ofstream( "serv.txt" ) << strXml;
+                //LOG( strXml );
 
                 //zmq::message_t msg( const_cast<char*>( strXml.c_str() ), strXml.size() + 1, nullptr );
                 //LOG( static_cast<const char*>( msg.data() ) );

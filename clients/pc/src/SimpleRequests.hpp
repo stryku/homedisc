@@ -29,12 +29,22 @@ namespace hd
 
             auto remove( const std::string &path )
             {
-                return simpleReq( "<msg><type>REMOVE</type><path>" + path + "</path></msg>" );
+                return simpleReq( "<msg><type>REMOVE_FILE</type><path>" + path + "</path></msg>" );
+            }
+
+            auto removeDirectory( const std::string &path )
+            {
+                return simpleReq( "<msg><type>REMOVE_DIR</type><path>" + path + "</path></msg>" );
             }
 
             auto newFile( const std::string &path, const std::string &base64 )
             {
                 return simpleReq( "<msg><type>NEW_FILE</type><path>" + path + "</path><file>" + base64 + "</file></msg>" );
+            }
+
+            auto newDirectory( const std::string &path )
+            {
+                return simpleReq( "<msg><type>NEW_DIR</type><path>" + path + "</path></msg>" );
             }
         }
     }

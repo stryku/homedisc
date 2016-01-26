@@ -33,6 +33,8 @@ namespace hd
 
                 serverList.fromXml( serverFilesListXml );
 
+                std::ofstream( "tmp.txt" ) << serverFilesListXml;
+
                 return filesystemEntryList.getDifferences( serverList );
             }
 
@@ -78,7 +80,7 @@ namespace hd
             }
 
 
-            void deleteFile( const std::string &path )
+            void deleteFile( const std::string &path )//todo error check
             {
                 auto fullpath = "C:/moje/programowanie/c++/HomeDisc/clients/pc/testnew" + path; //todo
 
@@ -93,31 +95,71 @@ namespace hd
                 auto responseOk = communicator.recv();
             }
 
+            void createDirectory( const std::string &path )
+            {
+                std::experimental::filesystem::create_directory( "C:/moje/programowanie/c++/HomeDisc/clients/pc/testnew" + path );//todo error check
+            }
+
+            void deleteDirectory( const std::string &path )
+            {
+                std::experimental::filesystem::remove_all( "C:/moje/programowanie/c++/HomeDisc/clients/pc/testnew" + path );//todo error check
+            }
+
+            void deleteRemoteDirectory( const std::string &path )//TODO move to another method
+            {
+                auto msg = SimpleRequests::removeDirectory( path );
+                communicator.send( msg );
+
+                auto responseOk = communicator.recv();
+            }
+
+            void createRemoteDirectory( const std::string &path )//TODO move to another method
+            {
+                auto msg = SimpleRequests::newDirectory( path );
+                communicator.send( msg );
+
+                auto responseOk = communicator.recv();
+            }
+
             void handleDifferences( const Differences &differences )
             {
-                ZmqMessagePtr msg;
 
                 for( const auto &diff : differences )
                 {
                     switch( diff.type )
                     {
-                        case filesystem::DifferenceType::CHANGED_OTHER:
-                        case filesystem::DifferenceType::NEW_OTHER:
-                            
+                        case filesystem::DifferenceType::CHANGED_FILE_REMOTE:
+                        case filesystem::DifferenceType::NEW_FILE_REMOTE:
                             downloadFile( diff.entryPath.string() );
                         break;
 
-                        case filesystem::DifferenceType::DELETED_OTHER:
-                            deleteFile( diff.entryPath.string() );  
-                        default:
+                        case filesystem::DifferenceType::NEW_DIR_REMOTE:
+                            createDirectory( diff.entryPath.string() );
+                        break;
 
-                        case filesystem::DifferenceType::DELETED_LOCALLY:
+                        case filesystem::DifferenceType::DELETED_FILE_REMOTE:
+                            deleteFile( diff.entryPath.string() );
+                        break;
+
+                        case filesystem::DifferenceType::DELETED_DIR_REMOTE:
+                            deleteDirectory( diff.entryPath.string() );
+                        break;
+
+                        case filesystem::DifferenceType::DELETED_FILE_LOCALLY:
                             deleteRemoteFile( diff.entryPath.string() );
                         break;
 
-                        case filesystem::DifferenceType::CHANGED_LOCALLY:
-                        case filesystem::DifferenceType::NEW_LOCALLY:
+                        case filesystem::DifferenceType::DELETED_DIR_LOCALLY:
+                            deleteRemoteDirectory( diff.entryPath.string() );
+                        break;
+
+                        case filesystem::DifferenceType::CHANGED_FILE_LOCALLY:
+                        case filesystem::DifferenceType::NEW_FILE_LOCALLY:
                             uploadFile( diff.entryPath.string() );
+                        break;
+
+                        case filesystem::DifferenceType::NEW_DIR_LOCALLY:
+                            createRemoteDirectory( diff.entryPath.string() );
                         break;
                     }
                 }
@@ -138,7 +180,7 @@ namespace hd
 
                 handleDifferences( differences );
 
-                filesystemEntryList.copyToOld();
+                filesystemEntryList.generateOld( "C:/moje/programowanie/c++/HomeDisc/clients/pc/testnew" );
             }
 
         private:
