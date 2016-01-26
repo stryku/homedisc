@@ -33,8 +33,6 @@ namespace hd
 
                 serverList.fromXml( serverFilesListXml );
 
-                std::ofstream( "tmp.txt" ) << serverFilesListXml;
-
                 return filesystemEntryList.getDifferences( serverList );
             }
 
