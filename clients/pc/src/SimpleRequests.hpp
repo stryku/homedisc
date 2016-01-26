@@ -1,5 +1,7 @@
 #pragma once
 
+#include "RequestBuilder.hpp"
+
 #include <zmq.hpp>
 
 #include <memory>
@@ -11,40 +13,64 @@ namespace hd
     {
         namespace SimpleRequests
         {
-            auto simpleReq( std::string content )
-            {
-                content += '\0';
-                return std::make_shared<zmq::message_t>( content.begin(), content.end() );
-            }
-
             auto fileList()
             {
-                return simpleReq( "<msg><type>LIST_REQ</type></msg>" );
+                RequestBuilder builder;
+
+                builder.setType( MessageType::LIST_REQ );
+
+                return builder.build();
             }
 
             auto file( const std::string &path )
             {
-                return simpleReq( "<msg><type>FILE_REQ</type><path>" + path + "</path></msg>" );
+                RequestBuilder builder;
+
+                builder.setType( MessageType::FILE_REQ );
+                builder.setPath( path );
+
+                return builder.build();
             }
 
             auto remove( const std::string &path )
             {
-                return simpleReq( "<msg><type>REMOVE_FILE</type><path>" + path + "</path></msg>" );
+                RequestBuilder builder;
+
+                builder.setType( MessageType::REMOVE_FILE );
+                builder.setPath( path );
+
+                return builder.build();
             }
 
             auto removeDirectory( const std::string &path )
             {
-                return simpleReq( "<msg><type>REMOVE_DIR</type><path>" + path + "</path></msg>" );
+                RequestBuilder builder;
+
+                builder.setType( MessageType::REMOVE_DIR );
+                builder.setPath( path );
+
+                return builder.build();
             }
 
-            auto newFile( const std::string &path, const std::string &base64 )
+            auto newFile( const std::string &path, const std::string &base64File )
             {
-                return simpleReq( "<msg><type>NEW_FILE</type><path>" + path + "</path><file>" + base64 + "</file></msg>" );
+                RequestBuilder builder;
+
+                builder.setType( MessageType::NEW_FILE );
+                builder.setPath( path );
+                builder.setFile( base64File );
+
+                return builder.build();
             }
 
             auto newDirectory( const std::string &path )
             {
-                return simpleReq( "<msg><type>NEW_DIR</type><path>" + path + "</path></msg>" );
+                RequestBuilder builder;
+
+                builder.setType( MessageType::NEW_DIR );
+                builder.setPath( path );
+
+                return builder.build();
             }
         }
     }
