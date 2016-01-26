@@ -3,6 +3,7 @@
 #include "FilesListResponse.hpp"
 #include "FileResponse.hpp"
 #include <FilesystemAffect.hpp>
+#include <MessageType.hpp>
 
 #include <router/log.h>
 
@@ -22,30 +23,11 @@ namespace hd
         class RequestHandler
         {
         private:
-            enum class MessageType
-            {
-                LIST_REQ,
-                FILE_REQ,
-                NEW_FILE,
-                NEW_DIR,
-                REMOVE_FILE,
-                REMOVE_DIR,
-
-                UNDEF
-            };
-
             MessageType getMsgType( const pt::ptree &msgTree )
             {
                 auto strType = msgTree.get_child( "msg.type" ).get_value( "" );
 
-                if( strType == "LIST_REQ" ) return MessageType::LIST_REQ;
-                if( strType == "FILE_REQ" ) return MessageType::FILE_REQ;
-                if( strType == "NEW_FILE" ) return MessageType::NEW_FILE;
-                if( strType == "NEW_DIR" ) return MessageType::NEW_DIR;
-                if( strType == "REMOVE_FILE" ) return MessageType::REMOVE_FILE;
-                if( strType == "REMOVE_DIR" ) return MessageType::REMOVE_DIR;
-
-                return MessageType::UNDEF;
+                return stringToMessageType( strType );
             }
 
         public:
