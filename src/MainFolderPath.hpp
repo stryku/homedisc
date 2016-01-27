@@ -2,9 +2,9 @@
 
 #include <string>
 
-namespace hd
+namespace HD
 {
-    namespace filesystem
+    namespace Filesystem
     {
         std::string getMainFolderPath()
         {

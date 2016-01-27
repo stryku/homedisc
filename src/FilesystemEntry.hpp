@@ -8,9 +8,9 @@
 #include <chrono>
 #include <ctime>
 
-namespace hd
+namespace HD
 {
-    namespace filesystem
+    namespace Filesystem
     {
         namespace fs = std::experimental::filesystem;
 

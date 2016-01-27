@@ -15,9 +15,9 @@
 
 #include <functional>
 
-namespace hd
+namespace HD
 {
-    namespace communication
+    namespace Communication
     {
         namespace pt = boost::property_tree;
 
@@ -51,27 +51,27 @@ namespace hd
                 {
                     case MessageType::LIST_REQ: 
                         LOG( "LIST_REQ" );
-                        return  FilesListResponse( filesystem::getMainFolderPath() ).toZmqMessage();//todo
+                        return  FilesListResponse( Filesystem::getMainFolderPath() ).toZmqMessage();//todo
 
                     case MessageType::FILE_REQ:
                         LOG( "FILE_REQ" );
                         return  handleFileRequest( tree );
 
                     case MessageType::NEW_FILE:
-                        filesystem::FilesystemAffect::createFileFromBase64( filesystem::getMainFolderPath() + tree.get_child( "request.path" ).get_value( "" ),// todo
+                        Filesystem::FilesystemAffect::createFileFromBase64( Filesystem::getMainFolderPath() + tree.get_child( "request.path" ).get_value( "" ),// todo
                                                                             tree.get_child( "msg.file" ).get_value( "" ) );
                     break;
 
                     case MessageType::NEW_DIR:
-                    filesystem::FilesystemAffect::createDirectory( filesystem::getMainFolderPath() + tree.get_child( "request.path" ).get_value( "" ) );// todo
+                    Filesystem::FilesystemAffect::createDirectory( Filesystem::getMainFolderPath() + tree.get_child( "request.path" ).get_value( "" ) );// todo
                     break;
 
                     case MessageType::REMOVE_FILE:
-                        std::experimental::filesystem::remove( filesystem::getMainFolderPath() + tree.get_child( "request.path" ).get_value( "" ) );// todo
+                        std::experimental::filesystem::remove( Filesystem::getMainFolderPath() + tree.get_child( "request.path" ).get_value( "" ) );// todo
                     break;
 
                     case MessageType::REMOVE_DIR:
-                        std::experimental::filesystem::remove_all( filesystem::getMainFolderPath() + tree.get_child( "request.path" ).get_value( "" ) );// todo
+                        std::experimental::filesystem::remove_all( Filesystem::getMainFolderPath() + tree.get_child( "request.path" ).get_value( "" ) );// todo
                     break;
 
                     default:

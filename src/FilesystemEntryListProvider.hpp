@@ -5,9 +5,9 @@
 #include <filesystem>
 #include <fstream>
 
-namespace hd
+namespace HD
 {
-    namespace filesystem
+    namespace Filesystem
     {
         struct FilesystemEntryListProvider
         {

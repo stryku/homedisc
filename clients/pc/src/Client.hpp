@@ -9,9 +9,9 @@
 #include <chrono>
 #include <thread>
 
-namespace hd
+namespace HD
 {
-    namespace communication
+    namespace Communication
     {
         class Client
         {

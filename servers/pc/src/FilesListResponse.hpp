@@ -11,9 +11,9 @@
 #include <string>
 #include <memory>
 
-namespace hd
+namespace HD
 {
-    namespace communication
+    namespace Communication
     {
         class FilesListResponse
         {
@@ -27,7 +27,7 @@ namespace hd
 
             auto toZmqMessage() const
             {
-                filesystem::FilesystemEntryList list;
+                Filesystem::FilesystemEntryList list;
                 
                 list.generate( path.string() );
                 auto strXml = list.toXml() + '\0';
@@ -43,7 +43,7 @@ namespace hd
 
             std::string toString() const
             {
-                auto list = filesystem::FilesystemEntryListProvider::getFilesystemEntryList( path.string() );
+                auto list = Filesystem::FilesystemEntryListProvider::getFilesystemEntryList( path.string() );
                 return list.toXml();
             }
 

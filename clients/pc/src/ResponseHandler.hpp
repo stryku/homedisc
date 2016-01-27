@@ -18,21 +18,21 @@
 #include <fstream>
 #include <vector>
 
-namespace hd
+namespace HD
 {
-    namespace communication
+    namespace Communication
     {
         class ResponseHandler
         {
         private:
             typedef std::shared_ptr<zmq::message_t> ZmqMessagePtr;
-            typedef std::vector<filesystem::FilesystemEntryDifference> Differences;
+            typedef std::vector<Filesystem::FilesystemEntryDifference> Differences;
 
             //todo
             auto getDifferences( const std::string &serverFilesListXml )
             {
-                filesystem::FilesystemEntryList serverList;
-                filesystemEntryList.generate( filesystem::getMainFolderPath() );
+                Filesystem::FilesystemEntryList serverList;
+                filesystemEntryList.generate( Filesystem::getMainFolderPath() );
 
                 serverList.fromXml( serverFilesListXml );
 
@@ -45,7 +45,7 @@ namespace hd
 
                 pt::ptree tree;
                 std::string strMsg( static_cast<const char*>( msgWithFile->data() ) );
-                std::string path( filesystem::getMainFolderPath() );
+                std::string path( Filesystem::getMainFolderPath() );
 
                 pt::read_xml( std::istringstream( strMsg ), tree );
 
@@ -53,7 +53,7 @@ namespace hd
 
                 auto base64File = tree.get_child( "resp.file" ).get_value( "" );
 
-                filesystem::FilesystemAffect::createFileFromBase64( path, base64File );
+                Filesystem::FilesystemAffect::createFileFromBase64( path, base64File );
             }
 
             void downloadFile( const std::string &relativePath )
@@ -69,7 +69,7 @@ namespace hd
 
             void uploadFile( const std::string &relativePath )
             {
-                auto fullpath = filesystem::getMainFolderPath() + relativePath; //todo
+                auto fullpath = Filesystem::getMainFolderPath() + relativePath; //todo
                 base64::encoder encoder;
                 std::ostringstream oss;
                 
@@ -84,23 +84,23 @@ namespace hd
 
             void deleteFile( const std::string &relativePath )//todo error check
             {
-                auto fullpath = filesystem::getMainFolderPath() + relativePath; //todo
+                auto fullpath = Filesystem::getMainFolderPath() + relativePath; //todo
 
-                filesystem::FilesystemAffect::deleteFile( fullpath );
+                Filesystem::FilesystemAffect::deleteFile( fullpath );
             }
 
             void createDirectory( const std::string &relativePath )
             {
-                auto fullpath = filesystem::getMainFolderPath() + relativePath; 
+                auto fullpath = Filesystem::getMainFolderPath() + relativePath; 
 
-                filesystem::FilesystemAffect::createDirectory( fullpath );//todo error check
+                Filesystem::FilesystemAffect::createDirectory( fullpath );//todo error check
             }
 
             void deleteDirectory( const std::string &relativePath )
             {
-                auto fullpath = filesystem::getMainFolderPath() + relativePath; 
+                auto fullpath = Filesystem::getMainFolderPath() + relativePath; 
 
-                filesystem::FilesystemAffect::deleteDirectory( fullpath );//todo error check
+                Filesystem::FilesystemAffect::deleteDirectory( fullpath );//todo error check
             }
 
             void deleteRemoteFile( const std::string &path )
@@ -134,37 +134,37 @@ namespace hd
                 {
                     switch( diff.type )
                     {
-                        case filesystem::DifferenceType::CHANGED_FILE_REMOTE:
-                        case filesystem::DifferenceType::NEW_FILE_REMOTE:
+                        case Filesystem::DifferenceType::CHANGED_FILE_REMOTE:
+                        case Filesystem::DifferenceType::NEW_FILE_REMOTE:
                             downloadFile( diff.entryPath.string() );
                         break;
 
-                        case filesystem::DifferenceType::NEW_DIR_REMOTE:
+                        case Filesystem::DifferenceType::NEW_DIR_REMOTE:
                             createDirectory( diff.entryPath.string() );
                         break;
 
-                        case filesystem::DifferenceType::DELETED_FILE_REMOTE:
+                        case Filesystem::DifferenceType::DELETED_FILE_REMOTE:
                             deleteFile( diff.entryPath.string() );
                         break;
 
-                        case filesystem::DifferenceType::DELETED_DIR_REMOTE:
+                        case Filesystem::DifferenceType::DELETED_DIR_REMOTE:
                             deleteDirectory( diff.entryPath.string() );
                         break;
 
-                        case filesystem::DifferenceType::DELETED_FILE_LOCALLY:
+                        case Filesystem::DifferenceType::DELETED_FILE_LOCALLY:
                             deleteRemoteFile( diff.entryPath.string() );
                         break;
 
-                        case filesystem::DifferenceType::DELETED_DIR_LOCALLY:
+                        case Filesystem::DifferenceType::DELETED_DIR_LOCALLY:
                             deleteRemoteDirectory( diff.entryPath.string() );
                         break;
 
-                        case filesystem::DifferenceType::CHANGED_FILE_LOCALLY:
-                        case filesystem::DifferenceType::NEW_FILE_LOCALLY:
+                        case Filesystem::DifferenceType::CHANGED_FILE_LOCALLY:
+                        case Filesystem::DifferenceType::NEW_FILE_LOCALLY:
                             uploadFile( diff.entryPath.string() );
                         break;
 
-                        case filesystem::DifferenceType::NEW_DIR_LOCALLY:
+                        case Filesystem::DifferenceType::NEW_DIR_LOCALLY:
                             createRemoteDirectory( diff.entryPath.string() );
                         break;
                     }
@@ -175,7 +175,7 @@ namespace hd
             ResponseHandler( Communicator &communicator ) :
                 communicator( communicator )
             {
-                filesystemEntryList.generate( filesystem::getMainFolderPath() );
+                filesystemEntryList.generate( Filesystem::getMainFolderPath() );
             }
 
             void handle( ZmqMessagePtr msg )
@@ -186,12 +186,12 @@ namespace hd
 
                 handleDifferences( differences );
 
-                filesystemEntryList.generateOld( filesystem::getMainFolderPath() );
+                filesystemEntryList.generateOld( Filesystem::getMainFolderPath() );
             }
 
         private:
             Communicator &communicator;
-            filesystem::FilesystemEntryList filesystemEntryList;
+            Filesystem::FilesystemEntryList filesystemEntryList;
         };
     }
 }

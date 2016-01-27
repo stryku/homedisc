@@ -6,7 +6,7 @@
 
 int main()
 {
-    hd::communication::Client client( "tcp://localhost:5570" );
+    HD::Communication::Client client( "tcp://localhost:5570" );
 
     client.run();
     

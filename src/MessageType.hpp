@@ -2,9 +2,9 @@
 
 #include <string>
 
-namespace hd
+namespace HD
 {
-    namespace communication
+    namespace Communication
     {
         enum class MessageType
         {

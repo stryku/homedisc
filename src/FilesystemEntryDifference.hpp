@@ -3,9 +3,9 @@
 #include <filesystem>
 #include <string>
 
-namespace hd
+namespace HD
 {
-    namespace filesystem
+    namespace Filesystem
     {
         namespace fs = std::experimental::filesystem;
 

@@ -7,9 +7,9 @@
 #include <memory>
 #include <string>
 
-namespace hd
+namespace HD
 {
-    namespace communication
+    namespace Communication
     {
         namespace SimpleRequests
         {

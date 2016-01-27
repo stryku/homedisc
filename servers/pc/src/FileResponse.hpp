@@ -1,5 +1,7 @@
 #pragma once
 
+#include <MainFolderPath.hpp>
+
 #include <b64/decode.h>
 #include <b64/encode.h>
 
@@ -15,9 +17,9 @@
 #include <string>
 #include <memory>
 
-namespace hd
+namespace HD
 {
-    namespace communication
+    namespace Communication
     {
         class FileResponse
         {
@@ -31,11 +33,11 @@ namespace hd
 
             auto toZmqMessage() const
             {
-                const char *folder = "C:/moje/programowanie/c++/HomeDisc/servers/pc/test";//todo
+                auto folderPath = Filesystem::getMainFolderPath();
 
-                auto p = std::experimental::filesystem::path( folder ) / relativePath;
+                auto fullPath = std::experimental::filesystem::path( folderPath ) / relativePath;
 
-                std::ifstream file( std::experimental::filesystem::path(folder) / relativePath, std::ios::binary );//todo
+                std::ifstream file( fullPath, std::ios::binary );//todo
                 base64::encoder encoder;
                 boost::property_tree::ptree tree;
                 std::ostringstream oss;

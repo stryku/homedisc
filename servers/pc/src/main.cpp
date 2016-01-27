@@ -3,7 +3,7 @@
 
 #include <iostream>
 
-using namespace hd::filesystem;
+using namespace HD::Filesystem;
 
 
 INITIALIZE_EASYLOGGINGPP
@@ -11,7 +11,7 @@ INITIALIZE_EASYLOGGINGPP
 int main()
 {
     Server server; 
-    hd::communication::RequestHandler reqHandler;
+    HD::Communication::RequestHandler reqHandler;
 
     server.run( reqHandler.getHandleFunction() );
 

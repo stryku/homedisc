@@ -6,9 +6,9 @@
 
 #include <memory>
 
-namespace hd
+namespace HD
 {
-    namespace communication
+    namespace Communication
     {
         class Communicator
         {

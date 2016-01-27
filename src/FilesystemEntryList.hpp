@@ -13,9 +13,9 @@
 #include <set>
 #include <algorithm>
 
-namespace hd
+namespace HD
 {
-    namespace filesystem
+    namespace Filesystem
     {
         class FilesystemEntryList
         {

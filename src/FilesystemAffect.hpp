@@ -7,9 +7,9 @@
 #include <string>
 #include <filesystem>
 
-namespace hd
+namespace HD
 {
-    namespace filesystem
+    namespace Filesystem
     {
         namespace FilesystemAffect
         {
