@@ -25,6 +25,16 @@ namespace hd
             {
                 return std::experimental::filesystem::create_directory( path );
             }
+
+            void deleteDirectory( const std::string &path )
+            {
+                std::experimental::filesystem::remove_all( path );//todo error check
+            }
+
+            void deleteFile( const std::string &path )//todo error check
+            {
+                std::experimental::filesystem::remove( path );
+            }
         }
     }
 }

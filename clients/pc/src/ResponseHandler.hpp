@@ -4,6 +4,7 @@
 #include <FilesystemEntryList.hpp>
 #include <FilesystemEntryListProvider.hpp>
 #include <MainFolderPath.hpp>
+#include <FilesystemAffect.hpp>
 
 #include <b64/decode.h>
 #include <b64/encode.h>
@@ -31,7 +32,7 @@ namespace hd
             auto getDifferences( const std::string &serverFilesListXml )
             {
                 filesystem::FilesystemEntryList serverList;
-                filesystemEntryList.generate( filesystem::getMainFolderPath() );//todo
+                filesystemEntryList.generate( filesystem::getMainFolderPath() );
 
                 serverList.fromXml( serverFilesListXml );
 
@@ -41,21 +42,23 @@ namespace hd
             void saveFile( ZmqMessagePtr msgWithFile )
             {
                 namespace pt = boost::property_tree;
+
                 pt::ptree tree;
                 std::string strMsg( static_cast<const char*>( msgWithFile->data() ) );
-                std::string path( filesystem::getMainFolderPath() );//todo
-                base64::decoder decoder;
+                std::string path( filesystem::getMainFolderPath() );
 
                 pt::read_xml( std::istringstream( strMsg ), tree );
 
                 path += tree.get_child( "resp.path" ).get_value( "" );
 
-                decoder.decode( std::istringstream( tree.get_child( "resp.file" ).get_value( "" ) ), std::ofstream( path, std::ios::binary ) );
+                auto base64File = tree.get_child( "resp.file" ).get_value( "" );
+
+                filesystem::FilesystemAffect::createFileFromBase64( path, base64File );
             }
 
-            void downloadFile( const std::string &path )
+            void downloadFile( const std::string &relativePath )
             {
-                auto msg = SimpleRequests::file( path );
+                auto msg = SimpleRequests::file( relativePath );
 
                 communicator.send( msg );
 
@@ -64,27 +67,40 @@ namespace hd
                 saveFile( responseWithFile );
             }
 
-            void uploadFile( const std::string &path )
+            void uploadFile( const std::string &relativePath )
             {
-                auto fullpath = filesystem::getMainFolderPath() + path; //todo
+                auto fullpath = filesystem::getMainFolderPath() + relativePath; //todo
                 base64::encoder encoder;
                 std::ostringstream oss;
                 
                 encoder.encode( std::ifstream( fullpath, std::ios::binary ), oss );
 
-                auto msg = SimpleRequests::newFile( path, oss.str() );
+                auto msg = SimpleRequests::newFile( relativePath, oss.str() );
 
                 communicator.send( msg );
 
                 auto responseOk = communicator.recv();
             }
 
-
-            void deleteFile( const std::string &path )//todo error check
+            void deleteFile( const std::string &relativePath )//todo error check
             {
-                auto fullpath = filesystem::getMainFolderPath() + path; //todo
+                auto fullpath = filesystem::getMainFolderPath() + relativePath; //todo
 
-                std::experimental::filesystem::remove( fullpath );
+                filesystem::FilesystemAffect::deleteFile( fullpath );
+            }
+
+            void createDirectory( const std::string &relativePath )
+            {
+                auto fullpath = filesystem::getMainFolderPath() + relativePath; 
+
+                filesystem::FilesystemAffect::createDirectory( fullpath );//todo error check
+            }
+
+            void deleteDirectory( const std::string &relativePath )
+            {
+                auto fullpath = filesystem::getMainFolderPath() + relativePath; 
+
+                filesystem::FilesystemAffect::deleteDirectory( fullpath );//todo error check
             }
 
             void deleteRemoteFile( const std::string &path )
@@ -93,16 +109,6 @@ namespace hd
                 communicator.send( msg );
 
                 auto responseOk = communicator.recv();
-            }
-
-            void createDirectory( const std::string &path )
-            {
-                std::experimental::filesystem::create_directory( filesystem::getMainFolderPath() + path );//todo error check
-            }
-
-            void deleteDirectory( const std::string &path )
-            {
-                std::experimental::filesystem::remove_all( filesystem::getMainFolderPath() + path );//todo error check
             }
 
             void deleteRemoteDirectory( const std::string &path )//TODO move to another method
