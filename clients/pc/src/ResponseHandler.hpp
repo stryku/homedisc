@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Communicator.hpp"
+#include "Errors.hpp"
 #include <FilesystemEntryList.hpp>
 #include <FilesystemEntryListProvider.hpp>
 #include <MainFolderPath.hpp>
@@ -32,11 +33,20 @@ namespace HD
             auto getDifferences( const std::string &serverFilesListXml )
             {
                 Filesystem::FilesystemEntryList serverList;
+
                 filesystemEntryList.generate( Filesystem::getMainFolderPath() );
 
-                serverList.fromXml( serverFilesListXml );
+                try
+                {
+                    serverList.fromXml( serverFilesListXml );
+                    return filesystemEntryList.getDifferences( serverList );
+                }
+                catch( boost::property_tree::xml_parser_error &e )
+                {
+                    Error::reportError( Error::ErrorType::BROKEN_LIST_FROM_SERVER, e.what() );
+                }
 
-                return filesystemEntryList.getDifferences( serverList );
+                return Differences();
             }
 
             void saveFile( ZmqMessagePtr msgWithFile )

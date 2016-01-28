@@ -4,6 +4,8 @@
 #include <string>
 #include <iostream>
 
+INITIALIZE_EASYLOGGINGPP
+
 int main()
 {
     HD::Communication::Client client( "tcp://localhost:5570" );
