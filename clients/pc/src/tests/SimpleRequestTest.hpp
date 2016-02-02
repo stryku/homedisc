@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../src/SimpleRequests.hpp"
+#include "../SimpleRequests.hpp"
 
 #include <gtest/gtest.h>
 

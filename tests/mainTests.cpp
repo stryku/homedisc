@@ -1,5 +1,4 @@
-#include "RequestBuilderTest.hpp"
-#include "SimpleRequestTest.hpp"
+#include "../clients/pc/src/tests/tests.hpp"
 
 #include <gtest/gtest.h>
 
