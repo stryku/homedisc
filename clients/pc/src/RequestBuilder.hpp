@@ -5,11 +5,20 @@
 #include <zmq.hpp>
 
 #include <memory>
+#include <stdexcept>
 
 namespace HD
 {
     namespace Communication
     {
+        class UndefMsgTypeRequestBuild : std::runtime_error
+        {
+        public:
+            UndefMsgTypeRequestBuild( const char *msg = "Trying to build request with undefined type") :
+                std::runtime_error( msg )
+            {}
+        };
+
         class RequestBuilder
         {
         public:
@@ -42,7 +51,7 @@ namespace HD
             std::string createContent() const
             {
                 if( type == MessageType::UNDEF )
-                    return ""; // todo throw
+                    throw UndefMsgTypeRequestBuild();
 
                 std::string content = "<request><type>";
 
