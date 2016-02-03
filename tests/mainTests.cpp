@@ -1,3 +1,4 @@
+#include "../src/tests/tests.hpp"
 #include "../clients/pc/src/tests/tests.hpp"
 
 #include <gtest/gtest.h>

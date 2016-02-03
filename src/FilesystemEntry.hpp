@@ -17,8 +17,20 @@ namespace HD
         enum class FilesystemEntryType
         {
             FILE,
-            DIRECTORY
+            DIRECTORY,
+            UNDEF
         };
+
+        std::string filesystemEntryTypeToString( FilesystemEntryType type )
+        {
+            switch( type )
+            {
+                case HD::Filesystem::FilesystemEntryType::FILE: return "FILE";
+                case HD::Filesystem::FilesystemEntryType::DIRECTORY: return "DIRECTORY";
+                case HD::Filesystem::FilesystemEntryType::UNDEF: return "UNDEF";
+                default: return "UNDEF";
+            }
+        }
 
         struct FilesystemEntry
         {
@@ -123,7 +135,7 @@ namespace HD
 
             std::string stringType() const
             {
-                return ( type == FilesystemEntryType::FILE ? "FILE" : "DIR" );
+                return filesystemEntryTypeToString( type );
             }
 
             friend std::ostream& operator<<( std::ostream &out, const FilesystemEntry &entry )
