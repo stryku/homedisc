@@ -7,6 +7,7 @@
 #include <fstream>
 #include <chrono>
 #include <ctime>
+#include <stdexcept>
 
 namespace HD
 {
@@ -17,7 +18,35 @@ namespace HD
         enum class FilesystemEntryType
         {
             FILE,
-            DIRECTORY
+            DIRECTORY,
+            UNDEF
+        };
+
+        std::string filesystemEntryTypeToString( FilesystemEntryType type )
+        {
+            switch( type )
+            {
+                case FilesystemEntryType::FILE: return "FILE";
+                case FilesystemEntryType::DIRECTORY: return "DIRECTORY";
+                case FilesystemEntryType::UNDEF: return "UNDEF";
+                default: return "UNDEF";
+            }
+        }
+
+        FilesystemEntryType stringtoFilesystemEntryType( const std::string &s )
+        {
+            if( s == "FILE" ) return FilesystemEntryType::FILE;
+            if( s == "DIRECTORY" ) return FilesystemEntryType::DIRECTORY;
+
+            return FilesystemEntryType::UNDEF;
+        }
+
+        class UndefEntryType : public std::runtime_error
+        {
+        public:
+            UndefEntryType( const char *msg = "Undefined entry type" ) :
+                std::runtime_error( msg )
+            {}
         };
 
         struct FilesystemEntry
@@ -123,7 +152,7 @@ namespace HD
 
             std::string stringType() const
             {
-                return ( type == FilesystemEntryType::FILE ? "FILE" : "DIR" );
+                return filesystemEntryTypeToString( type );
             }
 
             friend std::ostream& operator<<( std::ostream &out, const FilesystemEntry &entry )

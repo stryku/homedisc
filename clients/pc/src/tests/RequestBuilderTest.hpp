@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../src/RequestBuilder.hpp"
+#include "../RequestBuilder.hpp"
 
 #include <gtest/gtest.h>
 
