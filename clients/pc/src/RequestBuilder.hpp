@@ -11,10 +11,10 @@ namespace HD
 {
     namespace Communication
     {
-        class UndefMsgTypeRequestBuild : std::runtime_error
+        class UndefMsgTypeRequestBuild : public std::runtime_error
         {
         public:
-            UndefMsgTypeRequestBuild( const char *msg = "Trying to build request with undefined type") :
+            UndefMsgTypeRequestBuild( const char *msg = "Trying to build request with undefined type" ) :
                 std::runtime_error( msg )
             {}
         };

@@ -41,7 +41,10 @@ namespace HD
                     auto modDate = entry.second.get_child( "moddate" ).get_value( "" );
                     auto typeStr = entry.second.get_child( "type" ).get_value( "" );
 
-                    auto type = ( typeStr == "DIR" ? FilesystemEntryType::DIRECTORY : FilesystemEntryType::FILE );
+                    auto type = stringtoFilesystemEntryType( typeStr );
+
+                    if( type == FilesystemEntryType::UNDEF )
+                        throw UndefEntryType();
 
                     add( { path, modDate, md5, type }, entriesByPath );
                 }
