@@ -2,3 +2,6 @@ TODO.txt
 tests_vs_project/
 tests_vs_project/*
 bin/*
+*~
+build/
+build/*
