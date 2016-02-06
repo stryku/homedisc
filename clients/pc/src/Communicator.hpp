@@ -17,7 +17,7 @@ namespace HD
 
             void connect( const std::string &endpoint )
             {
-                socket.connect( endpoint );
+                socket.connect( endpoint.c_str() );
             }
 
             ZmqMessagePtr recv()
