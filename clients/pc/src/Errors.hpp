@@ -1,6 +1,6 @@
 #pragma once
 
-#include <router/log.h>
+#include <log.h>
 
 #include <string>
 

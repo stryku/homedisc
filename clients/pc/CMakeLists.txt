@@ -19,6 +19,7 @@ add_executable(ClientPC ${SRC_FILES})
 TARGET_LINK_LIBRARIES ( ClientPC
 	${ZEROMQ_LIBRARY}
 	${B64_LIBRARY}
+    ${Boost_LIBRARIES}
 )
 
 install(TARGETS ClientPC DESTINATION ${INSTALL_DIR})
