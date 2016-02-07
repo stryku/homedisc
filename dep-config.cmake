@@ -107,23 +107,21 @@ ENDIF ( MD5_FOUND )
 
 SET (BOOST_WINDOWS_PATH ${WINDOWS_LIBRARIES_PATH}/boost/boost_1_59_0)
 
-FIND_PATH ( BOOST_INCLUDE_DIR NAMES boost/array.hpp PATHS /usr/include/ /usr/local/include/ ${BOOST_WINDOWS_PATH} )
+find_package(Boost 1.58.0 COMPONENTS date_time filesystem system )
 
-IF ( BOOST_INCLUDE_DIR )
-    SET ( BOOST_FOUND TRUE )
-ENDIF ( BOOST_INCLUDE_DIR )
+#FIND_PATH ( BOOST_INCLUDE_DIR NAMES boost/array.hpp PATHS /usr/include/ /usr/local/include/ ${BOOST_WINDOWS_PATH} )
+#FIND_LIBRARY ( BOOST_LIBRARY NAMES boost_system boost_filesystem PATHS /usr/lib /usr/local/lib )
 
-IF ( BOOST_FOUND )
+#IF ( BOOST_INCLUDE_DIR AND BOOST_LIBRARY )
+#   SET ( BOOST_FOUND TRUE )
+#ENDIF ( BOOST_INCLUDE_DIR AND BOOST_LIBRARY )
+
+IF ( Boost_FOUND )
     SET ( DEP_FOUND TRUE )
-    IF ( NOT BOOST_FIND_QUIETLY )
-        MESSAGE ( STATUS "Found boost:" )
-        MESSAGE ( STATUS "  (Headers)       ${BOOST_INCLUDE_DIR}" )
-    ENDIF ( NOT BOOST_FIND_QUIETLY )
-ELSE ( BOOST_FOUND )
+    MESSAGE ( STATUS "Found boost libs: ${BOOST_LIBRARIES}" )
+ELSE ( Boost_FOUND )
     SET ( DEP_FOUND FALSE )
-    IF ( BOOST_FIND_REQUIRED )
-        MESSAGE ( FATAL_ERROR "Could not find boost" )
-    ENDIF ( BOOST_FIND_REQUIRED )
-ENDIF ( BOOST_FOUND )
+    MESSAGE ( FATAL_ERROR "Could not find boost" )
+ENDIF ( Boost_FOUND )
 
 

@@ -32,7 +32,8 @@ namespace HD
             {
                 namespace pt = boost::property_tree;
                 pt::ptree tree;
-                pt::read_xml( std::istringstream( xmlData ), tree );
+                std::istringstream iss( xmlData );
+                pt::read_xml( iss, tree );
                 
                 for( auto &entry : tree.get_child( "fel" ) )
                 {

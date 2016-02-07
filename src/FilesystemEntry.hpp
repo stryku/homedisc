@@ -3,7 +3,7 @@
 #include <md5/md5.hpp>
 
 #include <string>
-#include <filesystem>
+#include <boost/filesystem.hpp>
 #include <fstream>
 #include <chrono>
 #include <ctime>
@@ -13,7 +13,7 @@ namespace HD
 {
     namespace Filesystem
     {
-        namespace fs = std::experimental::filesystem;
+        namespace fs = boost::filesystem;
 
         enum class FilesystemEntryType
         {
@@ -30,6 +30,17 @@ namespace HD
                 case FilesystemEntryType::DIRECTORY: return "DIRECTORY";
                 case FilesystemEntryType::UNDEF: return "UNDEF";
                 default: return "UNDEF";
+            }
+        }
+
+        std::size_t filesystemEntryTypeHash( FilesystemEntryType type )
+        {
+            switch( type )
+            {
+                case FilesystemEntryType::FILE: return 1;
+                case FilesystemEntryType::DIRECTORY: return 2;
+                case FilesystemEntryType::UNDEF: return 3;
+                default: return -1;
             }
         }
 
@@ -67,9 +78,11 @@ namespace HD
                 entry.path = relativePath;
                 entry.type = ( fs::is_directory( dirEntry ) ? FilesystemEntryType::DIRECTORY : FilesystemEntryType::FILE );
 
-                auto tt = std::chrono::system_clock::to_time_t( fs::last_write_time( dirEntry ) );
+                auto lastWrite = fs::last_write_time( dirEntry );
 
-                auto tm = *gmtime( &tt );
+//                 auto tt = std::chrono::system_clock::to_time_t( lastWrite );
+
+                auto tm = *gmtime( &lastWrite );
 
                 entry.modificationDate = std::to_string( tm.tm_year ) +
                                             std::to_string( tm.tm_mon ) +
@@ -87,9 +100,8 @@ namespace HD
             auto hash() const
             {
                 std::hash<std::string> h;
-                std::hash<FilesystemEntryType> ht;
 
-                return h( md5 ) ^ h( modificationDate ) ^ h( path.string() ) ^ ht( type );
+                return h( md5 ) ^ h( modificationDate ) ^ h( path.string() ) ^ filesystemEntryTypeHash( type );
             }
 
             bool operator==( const FilesystemEntry &other ) const
@@ -171,9 +183,9 @@ namespace HD
 namespace std
 {
     template <>
-    struct hash<std::experimental::filesystem::path>
+    struct hash<boost::filesystem::path>
     {
-        size_t operator () ( const std::experimental::filesystem::path &p ) const
+        size_t operator () ( const boost::filesystem::path &p ) const
         {
             return std::hash<std::string>{}( p.string() );
         }

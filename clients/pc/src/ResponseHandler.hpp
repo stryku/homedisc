@@ -56,8 +56,9 @@ namespace HD
                 pt::ptree tree;
                 std::string strMsg( static_cast<const char*>( msgWithFile->data() ) );
                 std::string path( Filesystem::getMainFolderPath() );
+                std::istringstream iss( strMsg );
 
-                pt::read_xml( std::istringstream( strMsg ), tree );
+                pt::read_xml( iss, tree );
 
                 path += tree.get_child( "resp.path" ).get_value( "" );
 
@@ -82,8 +83,9 @@ namespace HD
                 auto fullpath = Filesystem::getMainFolderPath() + relativePath; //todo
                 base64::encoder encoder;
                 std::ostringstream oss;
+                std::ifstream in( fullpath, std::ios::binary );
                 
-                encoder.encode( std::ifstream( fullpath, std::ios::binary ), oss );
+                encoder.encode( in, oss );
 
                 auto msg = SimpleRequests::newFile( relativePath, oss.str() );
 

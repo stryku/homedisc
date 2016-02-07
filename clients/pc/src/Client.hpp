@@ -22,7 +22,7 @@ namespace HD
 
             void run()
             {
-
+                static const size_t delayBeetwenRequests = 10000;
                 communicator.connect( endpoint );
 
                 while( 1 )
@@ -40,7 +40,6 @@ namespace HD
 
         private:
 
-            static const size_t delayBeetwenRequests = 10000;
 
             std::string endpoint;
             Communicator communicator;
