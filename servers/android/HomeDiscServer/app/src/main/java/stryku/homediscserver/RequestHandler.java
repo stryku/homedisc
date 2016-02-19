@@ -1,29 +1,19 @@
 package stryku.homediscserver;
 
-import android.graphics.Path;
-import android.provider.MediaStore;
-import android.util.Base64;
+import android.os.Handler;
+import android.os.Message;
 import android.util.Log;
 
-import org.apache.http.client.protocol.RequestProxyAuthentication;
 import org.xmlpull.v1.XmlPullParserException;
 import org.zeromq.ZMQ;
-import org.zeromq.ZMsg;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
-import java.util.EventListener;
 import java.util.List;
-import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
-
-import zmq.Req;
 
 /**
  * Created by stryku on 14.02.16.
@@ -31,11 +21,11 @@ import zmq.Req;
 public class RequestHandler implements Runnable {
     private LinkedBlockingQueue<PersonalMessage> requestsToHandle = new LinkedBlockingQueue<PersonalMessage>();
     private MessageSender sender;
-    private List<ImportantEventListener> eventListeners = new ArrayList<>();
+    private List<Handler> eventHandlers = new ArrayList<>();
 
 
-    public void addEventListener(ImportantEventListener listener) {
-        eventListeners.add(listener);
+    public void addEventListener(Handler eventHandler) {
+        eventHandlers.add(eventHandler);
     }
 
     private String getFullPath(Request req) {
@@ -192,9 +182,11 @@ public class RequestHandler implements Runnable {
     }
 
     private void emitEvent(String eventMsg) {
-        ImportantEvent event = new ImportantEvent(eventMsg);
+        Message msg = new Message();
 
-        for(ImportantEventListener listener : eventListeners)
-            listener.handleEvent(event);
+        msg.obj = eventMsg;
+
+        for(Handler handler : eventHandlers)
+            handler.sendMessage(msg);
     }
 }

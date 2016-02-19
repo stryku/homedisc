@@ -1,6 +1,7 @@
 package stryku.homediscserver;
 
 
+import android.os.Handler;
 import android.provider.ContactsContract;
 import android.util.Log;
 
@@ -15,7 +16,7 @@ public class Server implements Runnable {
     private ZContext context = new ZContext( 1 );
     private ZMQ.Socket router;
     private MessageSender sender = new MessageSender();
-    private RequestHandler handler = new RequestHandler();
+    private RequestHandler requestHandler = new RequestHandler();
 
     public Server()
     {
@@ -33,10 +34,10 @@ public class Server implements Runnable {
         String msg;
 
         sender.setRouter(router);
-        handler.setSender(sender);
+        requestHandler.setSender(sender);
 
         senderThread = new Thread(sender);
-        requestHandlerThread = new Thread(handler);
+        requestHandlerThread = new Thread(requestHandler);
 
         senderThread.start();
         requestHandlerThread.start();
@@ -49,11 +50,11 @@ public class Server implements Runnable {
 
             PersonalMessage request = new PersonalMessage(identity.duplicate());
 
-            handler.newRequest(request);
+            requestHandler.newRequest(request);
         }
     }
 
-    public void addImportantEventListener(ImportantEventListener listener) {
-        handler.addEventListener(listener);
+    public void addImportantEventHandler(Handler handler) {
+        requestHandler.addEventListener(handler);
     }
 }

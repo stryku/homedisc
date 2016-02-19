@@ -5,6 +5,8 @@ import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Handler;
+import android.os.Message;
 import android.support.v7.app.ActionBarActivity;
 import android.text.format.Formatter;
 import android.util.Log;
@@ -25,6 +27,7 @@ public class MainActivity extends ActionBarActivity implements ImportantEventLis
     ArrayAdapter<String> adapter;
     private Thread t;
     private Server server;
+    private Handler importantEventsHandler;
 
 
     @Override
@@ -36,13 +39,17 @@ public class MainActivity extends ActionBarActivity implements ImportantEventLis
                 android.R.layout.simple_list_item_1,
                 events);
 
+        initImportantEventsHandler();
+
         ListView lv = (ListView)findViewById(R.id.listViewLatestEvents);
         lv.setAdapter(adapter);
+
+        addEventToList("siema");
 
         setIpAndPort();
 
         server = new Server();
-        server.addImportantEventListener(this);
+        server.addImportantEventHandler(importantEventsHandler);
         System.out.print("siema");
 
         t = new Thread(server);
@@ -51,6 +58,17 @@ public class MainActivity extends ActionBarActivity implements ImportantEventLis
         File file = new File(Environment.getExternalStorageDirectory() + "/HomeDiscServer/");
         file.mkdirs();
     }
+
+    private void initImportantEventsHandler() {
+        importantEventsHandler = new Handler() {
+            @Override
+            public void handleMessage(Message msg) {
+                addEventToList((String)msg.obj);
+                super.handleMessage(msg);
+            }
+        };
+    }
+
 
     public String getLocalIpAddress()
     {
@@ -105,9 +123,12 @@ public class MainActivity extends ActionBarActivity implements ImportantEventLis
         if( events.size() == MAX_EVENTS )
             events.remove( events.size() - 1 );
 
-        events.add( 0, eventDescription );
+        ListView lv = (ListView)findViewById(R.id.listViewLatestEvents);
 
-        Button btn;
+        ArrayAdapter<String> ad = (ArrayAdapter<String>) lv.getAdapter();
+
+        ad.insert(eventDescription, 0);
+        //events.add( 0, eventDescription );
     }
 
     @Override
