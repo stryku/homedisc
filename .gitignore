@@ -5,3 +5,5 @@ bin/*
 *~
 build/
 build/*
+tmp/
+tmp/*

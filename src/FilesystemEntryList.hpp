@@ -34,8 +34,9 @@ namespace HD
                 pt::ptree tree;
                 std::istringstream iss( xmlData );
                 pt::read_xml( iss, tree );
+                auto response = tree.get_child( "resp" );
                 
-                for( auto &entry : tree.get_child( "fel" ) )
+                for( auto &entry : response.get_child( "fel" ) )
                 {
                     auto md5 = entry.second.get_child("md5").get_value( "" );
                     auto path = fs::path( entry.second.get_child( "path" ).get_value( "" ) );

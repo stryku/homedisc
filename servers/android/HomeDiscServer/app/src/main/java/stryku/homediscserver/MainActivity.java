@@ -4,22 +4,28 @@ import android.media.audiofx.BassBoost;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.v7.app.ActionBarActivity;
 import android.text.format.Formatter;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import java.io.File;
 import java.util.ArrayList;
 
-public class MainActivity extends ActionBarActivity {
-
+public class MainActivity extends ActionBarActivity implements ImportantEventListener {
     static int MAX_EVENTS = 1000;
 
     ArrayList<String> events = new ArrayList<String>();
     ArrayAdapter<String> adapter;
+    private Thread t;
+    private Server server;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,9 +37,19 @@ public class MainActivity extends ActionBarActivity {
                 events);
 
         ListView lv = (ListView)findViewById(R.id.listViewLatestEvents);
-        lv.setAdapter( adapter );
+        lv.setAdapter(adapter);
 
         setIpAndPort();
+
+        server = new Server();
+        server.addImportantEventListener(this);
+        System.out.print("siema");
+
+        t = new Thread(server);
+        t.start();
+
+        File file = new File(Environment.getExternalStorageDirectory() + "/HomeDiscServer/");
+        file.mkdirs();
     }
 
     public String getLocalIpAddress()
@@ -90,5 +106,12 @@ public class MainActivity extends ActionBarActivity {
             events.remove( events.size() - 1 );
 
         events.add( 0, eventDescription );
+
+        Button btn;
+    }
+
+    @Override
+    public void handleEvent(ImportantEvent event) {
+        addEventToList(event.getMsg());
     }
 }

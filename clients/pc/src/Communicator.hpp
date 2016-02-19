@@ -5,6 +5,7 @@
 #include <zmq.hpp>
 
 #include <memory>
+#include <iostream>
 
 namespace HD
 {
@@ -25,12 +26,16 @@ namespace HD
                 auto msg = std::make_shared<zmq::message_t>();
 
                 socket.recv( msg.get() );
+                socket.recv( msg.get() );
+
+                std::cout<<"Received: "<<static_cast<const char*>( msg->data() )<<"\n";
 
                 return msg;
             }
 
             void send( ZmqMessagePtr msg )
             {
+                std::cout<<"Sending: "<<static_cast<const char*>( msg->data() )<<"\n";
                 socket.send( *msg.get() );
             }
 

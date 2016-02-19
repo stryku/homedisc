@@ -64,7 +64,7 @@ namespace HD
                     content += "<file>" + file + "</file>";
 
                 content += "</request>";
-                content += '\0';
+//                 content += '\0';
 
                 return content;
             }

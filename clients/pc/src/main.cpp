@@ -6,9 +6,20 @@
 
 INITIALIZE_EASYLOGGINGPP
 
-int main()
+int main( int argc, char *argv[] )
 {
-    HD::Communication::Client client( "tcp://localhost:5570" );
+
+    if( argc < 3 )
+    {
+        std::cerr << "client ip port";
+        return 1;
+    }
+
+    std::string endpoint{"tcp://"};
+    endpoint += argv[1];
+    endpoint += ':';
+    endpoint += argv[2];
+    HD::Communication::Client client( endpoint.c_str() );
 
     client.run();
     

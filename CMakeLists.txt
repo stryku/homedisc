@@ -13,7 +13,7 @@ FIND_PACKAGE ( dep )
 
 IF ( DEP_FOUND )
 
-    add_definitions(-std=c++1y)
+    add_definitions(-std=c++1y -ggdb -D_GLIBCXX_DEBUG)
 
     INCLUDE_DIRECTORIES ( ${ZEROMQ_INCLUDE_DIR} )
     LINK_DIRECTORIES ( ${ZEROMQ_LIBRARY} )

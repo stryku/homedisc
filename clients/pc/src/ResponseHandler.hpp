@@ -192,7 +192,7 @@ namespace HD
 
             void handle( ZmqMessagePtr msg )
             {
-                std::string strMsg( static_cast<const char*>( msg->data() ) );
+                std::string strMsg( static_cast<const char*>( msg->data() ), msg->size() );
 
                 auto differences = getDifferences( strMsg );
 
