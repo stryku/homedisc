@@ -21,7 +21,8 @@ public class FilesystemEntryList {
             }
         }
 
-        entries.add(new FilesystemEntry(fileOrDirectory));
+        if(fileOrDirectory.getPath() != Settings.getMainFolderPath())
+            entries.add(new FilesystemEntry(fileOrDirectory));
     }
 
     public void generate(String path) {

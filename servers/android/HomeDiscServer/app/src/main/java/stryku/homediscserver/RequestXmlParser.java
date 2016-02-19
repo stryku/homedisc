@@ -60,7 +60,7 @@ public class RequestXmlParser {
                     } else if (tagname.equalsIgnoreCase("type")) {
                         request.type = Request.Type.valueOf(text);
                     } else if (tagname.equalsIgnoreCase("file")) {
-                        request.type = Request.Type.valueOf(text);
+                        request.values.put("file", text);
                     } else if (tagname.equalsIgnoreCase("request")) {
                         return request;
                     } else {

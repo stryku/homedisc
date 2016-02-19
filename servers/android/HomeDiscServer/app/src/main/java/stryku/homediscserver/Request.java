@@ -17,5 +17,5 @@ public class Request {
     }
 
     public Type type;
-    HashMap<String, String> values;
+    HashMap<String, String> values = new HashMap<>();
 }
