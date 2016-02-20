@@ -78,23 +78,43 @@ namespace HD
                 entry.path = relativePath;
                 entry.type = ( fs::is_directory( dirEntry ) ? FilesystemEntryType::DIRECTORY : FilesystemEntryType::FILE );
 
-                auto lastWrite = fs::last_write_time( dirEntry );
-
-//                 auto tt = std::chrono::system_clock::to_time_t( lastWrite );
-
-                auto tm = *gmtime( &lastWrite );
-
-                entry.modificationDate = std::to_string( tm.tm_year ) +
-                                            std::to_string( tm.tm_mon ) +
-                                            std::to_string( tm.tm_mday ) +
-                                            std::to_string( tm.tm_hour ) +
-                                            std::to_string( tm.tm_min ) +
-                                            std::to_string( tm.tm_sec );
-
+                entry.modificationDate = createModificationDate( dirEntry );
+                
                 if( entry.type != FilesystemEntryType::DIRECTORY )
                     entry.md5 = md5.digestFile( dirEntry.path().string().c_str() );
 
                 return entry;
+            }
+
+            static std::string intToStrWithLeadingZeros( const int value, int max = 10 )
+            {
+                std::string result;
+                int copy = value;
+
+                while( copy < max )
+                {
+                    result += '0';
+                    copy *= 10;
+                }
+
+                return result + std::to_string( value );
+            }
+
+            static std::string createModificationDate( const fs::directory_entry &dirEntry ) 
+            {
+                std::string result;
+
+                auto lastWrite = fs::last_write_time( dirEntry );
+                auto tm = *localtime( &lastWrite );
+
+                result = std::to_string( tm.tm_year + 1900 );
+                result += intToStrWithLeadingZeros( tm.tm_mon + 1 );
+                result += intToStrWithLeadingZeros( tm.tm_mday );
+                result += intToStrWithLeadingZeros( tm.tm_hour );
+                result += intToStrWithLeadingZeros( tm.tm_min );
+                result += intToStrWithLeadingZeros( tm.tm_sec );
+
+                return result;
             }
 
             auto hash() const
