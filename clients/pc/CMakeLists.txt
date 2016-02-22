@@ -18,6 +18,7 @@ add_executable(ClientPC ${SRC_FILES})
  
 TARGET_LINK_LIBRARIES ( ClientPC
 	${ZEROMQ_LIBRARY}
+    ${MD5_LIBRARY}
 	${B64_LIBRARY}
     ${Boost_LIBRARIES}
 )
