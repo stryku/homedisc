@@ -84,7 +84,8 @@ ENDIF ( B64_FOUND )
 
 SET (MD5_WINDOWS_PATH ${WINDOWS_LIBRARIES_PATH}/md5)
 
-FIND_PATH ( MD5_INCLUDE_DIR NAMES md5/md5.hpp PATHS /usr/include/ /usr/local/include/ ${MD5_WINDOWS_PATH} )
+FIND_PATH ( MD5_INCLUDE_DIR NAMES md5/md5.h PATHS /usr/include/ /usr/local/include/ ${MD5_WINDOWS_PATH} )
+FIND_LIBRARY ( MD5_LIBRARY NAMES cryptolib PATHS /usr/lib /usr/local/lib ${MD5_WINDOWS_PATH}/lib )
 
 IF ( MD5_INCLUDE_DIR )
     SET ( MD5_FOUND TRUE )
@@ -95,6 +96,7 @@ IF ( MD5_FOUND )
     IF ( NOT MD5_FIND_QUIETLY )
         MESSAGE ( STATUS "Found md5:" )
         MESSAGE ( STATUS "  (Headers)       ${MD5_INCLUDE_DIR}" )
+        MESSAGE ( STATUS "  (Library)       ${MD5_LIBRARY}" )
     ENDIF ( NOT MD5_FIND_QUIETLY )
 ELSE ( MD5_FOUND )
     SET ( DEP_FOUND FALSE )
