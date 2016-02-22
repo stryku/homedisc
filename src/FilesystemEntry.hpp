@@ -1,6 +1,6 @@
 #pragma once
 
-#include <md5/md5.hpp>
+#include "Md5.hpp"
 
 #include <string>
 #include <boost/filesystem.hpp>
@@ -71,7 +71,6 @@ namespace HD
                                            const fs::path &pathToDirectory )
             {
                 FilesystemEntry entry;
-                MD5 md5;
 
                 auto relativePath = dirEntry.path().string().substr( pathToDirectory.string().length() );
 
@@ -81,7 +80,7 @@ namespace HD
                 entry.modificationDate = createModificationDate( dirEntry );
                 
                 if( entry.type != FilesystemEntryType::DIRECTORY )
-                    entry.md5 = md5.digestFile( dirEntry.path().string().c_str() );
+                    entry.md5 = Md5::hashFile( dirEntry.path().string() );
 
                 return entry;
             }
