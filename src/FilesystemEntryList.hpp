@@ -28,15 +28,24 @@ namespace HD
                 addTo[entry.path] = entry;
             }
 
-            void fromXml( const std::string &xmlData )
+            void fromIstream( std::istream &in ) 
             {
                 namespace pt = boost::property_tree;
                 pt::ptree tree;
+                pt::read_xml( in, tree );
+
+                fromTree( tree.get_child( "fel" ) );
+            }
+
+            void fromXml( const std::string &xmlData )
+            {
                 std::istringstream iss( xmlData );
-                pt::read_xml( iss, tree );
-                auto response = tree.get_child( "resp" );
-                
-                for( auto &entry : response.get_child( "fel" ) )
+                fromIstream( iss );
+            }
+
+            void fromTree( boost::property_tree::ptree &tree )
+            {
+                for( auto &entry : tree )
                 {
                     auto md5 = entry.second.get_child("md5").get_value( "" );
                     auto path = fs::path( entry.second.get_child( "path" ).get_value( "" ) );
@@ -114,6 +123,16 @@ namespace HD
             void generateOld( const std::string &path )
             {
                 generate( path, &oldEntries );
+            }
+
+            void serialize( std::ostream &out ) const
+            {
+                out << toXml();
+            }
+
+            void deserialize( std::istream &in )
+            {
+                fromIstream( in );
             }
 
             void generate( const std::string &path, std::map<fs::path, FilesystemEntry> *out = nullptr )

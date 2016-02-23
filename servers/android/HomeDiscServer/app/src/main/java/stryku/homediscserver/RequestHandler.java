@@ -70,7 +70,7 @@ public class RequestHandler implements Runnable {
     }
 
     private String handleNewDirectory(Request req) {
-        String fullPath= getFullPath(req) + "/";
+        String fullPath= getFullPath(req);
         File dir = new File(fullPath);
         String eventMsg;
 
@@ -78,9 +78,10 @@ public class RequestHandler implements Runnable {
             emitEvent(createEventMsg(req.type, true, req.values.get("path")));
             return ResponseFactory.getSucceedResponse();
         }
-
-        emitEvent(createEventMsg(req.type, false, req.values.get("path")));
-        return ResponseFactory.getFailResponse();
+        else {
+            emitEvent(createEventMsg(req.type, false, req.values.get("path")));
+            return ResponseFactory.getFailResponse();
+        }
     }
 
     private String handleNewFile(Request req) {

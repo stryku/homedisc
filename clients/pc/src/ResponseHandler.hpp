@@ -29,8 +29,20 @@ namespace HD
             typedef std::shared_ptr<zmq::message_t> ZmqMessagePtr;
             typedef std::vector<Filesystem::FilesystemEntryDifference> Differences;
 
+
+            auto getFelFromResponse( const std::string &serverResponseXml )
+            {
+                namespace pt = boost::property_tree;
+                pt::ptree tree;
+                std::istringstream in( serverResponseXml );
+                pt::read_xml( in, tree );
+                auto response = tree.get_child( "resp" );
+
+                return response.get_child( "fel" );
+            }
+
             //todo
-            auto getDifferences( const std::string &serverFilesListXml )
+            auto getDifferences( const std::string &serverResponseXml )
             {
                 Filesystem::FilesystemEntryList serverList;
 
@@ -38,7 +50,8 @@ namespace HD
 
                 try
                 {
-                    serverList.fromXml( serverFilesListXml );
+                    auto felFromResponse = getFelFromResponse( serverResponseXml );
+                    serverList.fromTree( felFromResponse );
                     return filesystemEntryList.getDifferences( serverList );
                 }
                 catch( boost::property_tree::xml_parser_error &e )
@@ -54,7 +67,7 @@ namespace HD
                 namespace pt = boost::property_tree;
 
                 pt::ptree tree;
-                std::string strMsg( static_cast<const char*>( msgWithFile->data() ) );
+                std::string strMsg( static_cast<const char*>( msgWithFile->data() ), msgWithFile->size() );
                 std::string path( Filesystem::getMainFolderPath() );
                 std::istringstream iss( strMsg );
 
@@ -187,7 +200,9 @@ namespace HD
             ResponseHandler( Communicator &communicator ) :
                 communicator( communicator )
             {
-                filesystemEntryList.generate( Filesystem::getMainFolderPath() );
+                std::ifstream in( "fel.xml" );
+                if( in.good() )
+                    filesystemEntryList.deserialize( in );
             }
 
             void handle( ZmqMessagePtr msg )
@@ -199,6 +214,9 @@ namespace HD
                 handleDifferences( differences );
 
                 filesystemEntryList.generateOld( Filesystem::getMainFolderPath() );
+
+                std::ofstream out( "fel.xml" );
+                filesystemEntryList.serialize( out );
             }
 
         private:
