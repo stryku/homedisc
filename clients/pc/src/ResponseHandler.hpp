@@ -187,7 +187,9 @@ namespace HD
             ResponseHandler( Communicator &communicator ) :
                 communicator( communicator )
             {
-                filesystemEntryList.generate( Filesystem::getMainFolderPath() );
+                std::ifstream in( "fel.xml" );
+                if( in.good() )
+                    filesystemEntryList.deserialize( in );
             }
 
             void handle( ZmqMessagePtr msg )
@@ -199,6 +201,9 @@ namespace HD
                 handleDifferences( differences );
 
                 filesystemEntryList.generateOld( Filesystem::getMainFolderPath() );
+
+                std::ofstream out( "fel.xml" );
+                filesystemEntryList.serialize( out );
             }
 
         private:
