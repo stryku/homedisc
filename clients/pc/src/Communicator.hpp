@@ -1,6 +1,7 @@
 #pragma once
 
 #include "SimpleRequests.hpp"
+#include "log.h"
 
 #include <zmq.hpp>
 
@@ -28,14 +29,14 @@ namespace HD
                 socket.recv( msg.get() );
                 socket.recv( msg.get() );
 
-                std::cout<<"Received: "<<static_cast<const char*>( msg->data() )<<"\n";
+                LOG( "Received: " << std::string( static_cast<const char*>( msg->data() ), msg->size() ) );
 
                 return msg;
             }
 
             void send( ZmqMessagePtr msg )
             {
-                std::cout<<"Sending: "<<static_cast<const char*>( msg->data() )<<"\n";
+                LOG( "Sending: " << std::string( static_cast<const char*>( msg->data() ), msg->size() ) );
                 socket.send( *msg.get() );
             }
 

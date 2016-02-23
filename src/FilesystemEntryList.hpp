@@ -33,9 +33,19 @@ namespace HD
                 namespace pt = boost::property_tree;
                 pt::ptree tree;
                 pt::read_xml( in, tree );
-                auto response = tree.get_child( "resp" );
-                
-                for( auto &entry : response.get_child( "fel" ) )
+
+                fromTree( tree.get_child( "fel" ) );
+            }
+
+            void fromXml( const std::string &xmlData )
+            {
+                std::istringstream iss( xmlData );
+                fromIstream( iss );
+            }
+
+            void fromTree( boost::property_tree::ptree &tree )
+            {
+                for( auto &entry : tree )
                 {
                     auto md5 = entry.second.get_child("md5").get_value( "" );
                     auto path = fs::path( entry.second.get_child( "path" ).get_value( "" ) );
@@ -50,12 +60,6 @@ namespace HD
                     add( { path, modDate, md5, type }, entriesByPath );
                 }
             }
-
-            void fromXml( const std::string &xmlData )
-            {
-                std::istringstream iss( xmlData );
-                fromIstream( iss );
-            } 
 
             std::string toXml() const 
             {

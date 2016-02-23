@@ -15,12 +15,15 @@ public class FilesystemEntry {
 
     public String path;
     public String modificationDate;
-    public String md5;
+    public String md5 = "";
     public FilesystemEntryType type;
 
     FilesystemEntry(File file) {
         this.path = file.getPath().substring(Settings.getMainFolderPath().length() + 1);
-        this.md5 = IOUtil.md5OfFile(file.getPath());
+
+        if(file.isFile())
+            this.md5 = IOUtil.md5OfFile(file.getPath());
+
 
         if(file.isDirectory())
             this.type = FilesystemEntryType.DIRECTORY;
