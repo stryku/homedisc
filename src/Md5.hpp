@@ -2,8 +2,8 @@
 
 #include <md5/md5.h>
 
-#include <memory>
 #include <stdexcept>
+#include <vector>
 #include <fstream>
 #include <string>
 
@@ -15,14 +15,15 @@ namespace Md5
 
         size_t numBytesRead;
         MD5 md5;
-        std::unique_ptr<char> buffer = std::make_unique<char>();
+        std::vector<char> buffer( BufferSize );
+
 
         while( in )
         {
-            in.read( buffer.get(), BufferSize );
+            in.read( &buffer[0], BufferSize );
             numBytesRead = in.gcount();
 
-            md5.add( buffer.get(), numBytesRead );
+            md5.add( &buffer[0], numBytesRead );
         }
 
         return md5.getHash();
