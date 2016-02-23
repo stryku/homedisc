@@ -19,7 +19,7 @@ public class FilesystemEntry {
     public FilesystemEntryType type;
 
     FilesystemEntry(File file) {
-        this.path = file.getPath().substring(Settings.getMainFolderPath().length());
+        this.path = file.getPath().substring(Settings.getMainFolderPath().length() + 1);
         this.md5 = IOUtil.md5OfFile(file.getPath());
 
         if(file.isDirectory())

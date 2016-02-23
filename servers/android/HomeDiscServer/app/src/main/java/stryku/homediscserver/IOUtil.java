@@ -46,12 +46,10 @@ public class IOUtil {
     }
 
     static public String md5OfFile(String path) {
-        MessageDigest mdEnc;
-        String fileContent;
+        String result = null;
 
         try {
-            fileContent = readFileToString(path);
-            mdEnc = MessageDigest.getInstance("MD5");
+            result = MD5Checksum.getMD5Checksum(path);
         } catch (NoSuchAlgorithmException e) {
             System.out.println("Exception while encrypting to md5");
             e.printStackTrace();
@@ -60,14 +58,17 @@ public class IOUtil {
             System.out.println("Exception while encrypting to md5");
             e.printStackTrace();
             return null;
+        } catch (Exception e) {
+            e.printStackTrace();
         }
 
-        mdEnc.update(fileContent.getBytes(), 0, fileContent.length());
+        /*mdEnc.update(fileContent.getBytes(), 0, fileContent.length());
         String md5 = new BigInteger(1, mdEnc.digest()).toString(16);
         while ( md5.length() < 32 ) {
             md5 = "0"+md5;
         }
-        return md5;
+        return md5;*/
+        return result;
     }
 
     static public String fileToBase64(String path) throws IOException {
