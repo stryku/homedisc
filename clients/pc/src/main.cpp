@@ -6,6 +6,12 @@
 
 INITIALIZE_EASYLOGGINGPP
 
+void initLogging() 
+{
+    el::Configurations conf( "conf/logger.conf" );
+    el::Loggers::reconfigureAllLoggers( conf );
+}
+
 int main( int argc, char *argv[] )
 {
 
@@ -14,6 +20,8 @@ int main( int argc, char *argv[] )
         std::cerr << "client ip port";
         return 1;
     }
+
+    initLogging();
 
     std::string endpoint{"tcp://"};
     endpoint += argv[1];

@@ -25,6 +25,9 @@ IF ( DEP_FOUND )
 	
 	add_subdirectory(clients)
    
+    install( DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/res/conf" 
+                       "${CMAKE_CURRENT_SOURCE_DIR}/res/logs"
+             DESTINATION "${INSTALL_DIR}" )
 ENDIF ( DEP_FOUND )
 
 
