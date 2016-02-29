@@ -2,7 +2,6 @@ package stryku.homediscserver;
 
 
 import android.os.Handler;
-import android.provider.ContactsContract;
 import android.util.Log;
 
 import org.zeromq.ZContext;
@@ -55,6 +54,6 @@ public class Server implements Runnable {
     }
 
     public void addImportantEventHandler(Handler handler) {
-        requestHandler.addEventListener(handler);
+        requestHandler.addEventHandler(handler);
     }
 }

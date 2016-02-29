@@ -24,9 +24,9 @@ public class RequestHandler implements Runnable {
     private List<Handler> eventHandlers = new ArrayList<>();
 
 
-    public void addEventListener(Handler eventHandler) {
+    public void addEventHandler(Handler eventHandler) {
         eventHandlers.add(eventHandler);
-    }//TODO
+    }
 
     private String getFullPath(Request req) {
         String relativePath = req.values.get("path");
@@ -64,8 +64,7 @@ public class RequestHandler implements Runnable {
         return ResponseFactory.getSucceedResponse();
     }
 
-    private String createEventMsg(Request.Type requestType, boolean succeed, String path )
-    {
+    private String createEventMsg(Request.Type requestType, boolean succeed, String path ) {
         return String.format("[%s][%s]: %s\n", requestType.toString(), String.valueOf(succeed), path);
     }
 
@@ -167,7 +166,6 @@ public class RequestHandler implements Runnable {
                 Log.d("DEB", "Handler thread interrupted");
             }
         }
-
     }
 
     public void newRequest( PersonalMessage req ) {
@@ -182,7 +180,7 @@ public class RequestHandler implements Runnable {
         this.sender = sender;
     }
 
-    private void emitEvent(String eventMsg) {//TODO event -> msg
+    private void emitEvent(String eventMsg) {
         Message msg = new Message();
 
         msg.obj = eventMsg;
