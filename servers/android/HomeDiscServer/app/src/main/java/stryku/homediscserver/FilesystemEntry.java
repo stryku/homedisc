@@ -30,14 +30,14 @@ public class FilesystemEntry {
         else
             this.type = FilesystemEntryType.FILE;
 
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss"); //TODO
         this.modificationDate = sdf.format(file.lastModified());
     }
 
     public String toXml() {
         String xml = "";
 
-        xml += String.format("<path>%s</path>", path);
+        xml += String.format("<path>%s</path>", path);//TODO
         xml += String.format("<md5>%s</md5>", md5);
         xml += String.format("<moddate>%s</moddate>", modificationDate);
         xml += String.format("<type>%s</type>", type.toString());

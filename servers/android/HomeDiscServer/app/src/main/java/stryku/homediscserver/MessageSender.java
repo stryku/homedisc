@@ -18,7 +18,7 @@ public class MessageSender implements Runnable {
     {
         try
         {
-            while( true )
+            while( true )//TODO brackets
             {
                 ZMsg msg = new ZMsg();
                 PersonalMessage pmsg = messagesToSend.take();

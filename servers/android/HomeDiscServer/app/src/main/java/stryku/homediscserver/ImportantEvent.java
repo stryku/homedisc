@@ -7,7 +7,7 @@ import java.util.EventObject;
 /**
  * Created by stryku on 14.02.16.
  */
-public class ImportantEvent {
+public class ImportantEvent {//TODO
     private String msg;
 
     ImportantEvent(String msg) {

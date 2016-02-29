@@ -30,7 +30,7 @@ public class ResponseBuilder {
         return this;
     }
 
-    public String build() {
+    public String build() {//TODO string builder
         String response = "<resp>";
 
         response += String.format("<succeed>%s</succeed>", String.valueOf(succeed));

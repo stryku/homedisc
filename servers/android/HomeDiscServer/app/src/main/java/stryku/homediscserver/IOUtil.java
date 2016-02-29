@@ -40,7 +40,7 @@ public class IOUtil {
         }
     }
 
-    static public String readFileToString(String path) throws IOException {
+    static public String readFileToString(String path) throws IOException {//TODO
         byte[] bytes = readFile(path);
         return new String(bytes);
     }

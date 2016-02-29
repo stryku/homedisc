@@ -27,14 +27,14 @@ public class RequestXmlParser {
             XmlPullParser parser = Xml.newPullParser();
             parser.setFeature(XmlPullParser.FEATURE_PROCESS_NAMESPACES, false);
             parser.setInput(in, null);
-            //parser.require(XmlPullParser.START_TAG, ns, "request");
+            //parser.require(XmlPullParser.START_TAG, ns, "request");//TODO
             return parseRequest2(parser);
         } finally {
             in.close();
         }
     }
 
-    private Request parseRequest2(XmlPullParser parser) throws XmlPullParserException, RequestXmlParserException, IOException {
+    private Request parseRequest2(XmlPullParser parser) throws XmlPullParserException, RequestXmlParserException, IOException {//TODO 2
         Request request = null;
         String text = null;
 
@@ -45,7 +45,7 @@ public class RequestXmlParser {
             switch (eventType) {
                 case XmlPullParser.START_TAG:
                     if (tagname.equalsIgnoreCase("request")) {
-                        // create a new instance of employee
+                        // create a new instance of employee//TODO
                         request = new Request();
                     }
                     break;
@@ -77,7 +77,7 @@ public class RequestXmlParser {
         return request;
     }
 
-    static private Request parseRequest(XmlPullParser parser) throws IOException, XmlPullParserException {
+    static private Request parseRequest(XmlPullParser parser) throws IOException, XmlPullParserException {//TODO
         Request req = new Request();
 
         req.type = readType(parser);

@@ -10,7 +10,7 @@ import java.security.NoSuchAlgorithmException;
 /**
  * Created by stryku on 22.02.16.
  */
-public class MD5Checksum {
+public class MD5Checksum {//TODO check if we need it
     public static byte[] createChecksum(String filename) throws IOException, NoSuchAlgorithmException {
         InputStream fis =  new FileInputStream(filename);
 

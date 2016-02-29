@@ -15,7 +15,7 @@ public class PersonalMessage {
     PersonalMessage(ZMsg msg) {
         this.identity = msg.unwrap();
 
-       // ZFrame strMsg = msg.pop();
+       // ZFrame strMsg = msg.pop();//TODO
 
         //if(strMsg != null)
         this.msg = new String(msg.getFirst().getData(), ZMQ.CHARSET);

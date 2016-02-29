@@ -26,7 +26,7 @@ public class RequestHandler implements Runnable {
 
     public void addEventListener(Handler eventHandler) {
         eventHandlers.add(eventHandler);
-    }
+    }//TODO
 
     private String getFullPath(Request req) {
         String relativePath = req.values.get("path");
@@ -182,7 +182,7 @@ public class RequestHandler implements Runnable {
         this.sender = sender;
     }
 
-    private void emitEvent(String eventMsg) {
+    private void emitEvent(String eventMsg) {//TODO event -> msg
         Message msg = new Message();
 
         msg.obj = eventMsg;

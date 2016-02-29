@@ -34,7 +34,7 @@ public class FilesystemEntryList {
 
         for(FilesystemEntry entry : entries) {
 
-            xml += "<entry>" + entry.toXml() + "</entry>";
+            xml += "<entry>" + entry.toXml() + "</entry>";//TODO
         }
 
 

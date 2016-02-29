@@ -31,7 +31,7 @@ public class MainActivity extends ActionBarActivity implements ImportantEventLis
 
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState) {//TODO move server to another method, thread joining
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
@@ -55,7 +55,7 @@ public class MainActivity extends ActionBarActivity implements ImportantEventLis
         t = new Thread(server);
         t.start();
 
-        File file = new File(Environment.getExternalStorageDirectory() + "/HomeDiscServer/");
+        File file = new File(Environment.getExternalStorageDirectory() + "/HomeDiscServer/");//todo
         file.mkdirs();
     }
 
