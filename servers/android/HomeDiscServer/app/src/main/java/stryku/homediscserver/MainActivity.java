@@ -1,21 +1,17 @@
 package stryku.homediscserver;
 
-import android.media.audiofx.BassBoost;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
-import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v7.app.ActionBarActivity;
 import android.text.format.Formatter;
-import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.ToggleButton;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -25,9 +21,8 @@ public class MainActivity extends ActionBarActivity {
 
     ArrayList<String> events = new ArrayList<String>();
     ArrayAdapter<String> adapter;
-    private Thread t;
-    private Server server;
     private Handler importantEventsHandler;
+    private ServerManager serverManager = new ServerManager();
 
 
     @Override
@@ -40,22 +35,31 @@ public class MainActivity extends ActionBarActivity {
                                     events);
 
         initImportantEventsHandler();
+        initSwitchOnOffServerListener();
 
         ListView lv = (ListView)findViewById(R.id.listViewLatestEvents);
         lv.setAdapter(adapter);
 
         setIpAndPort();
 
-        server = new Server();
-        server.addImportantEventHandler(importantEventsHandler);
-
-        t = new Thread(server);
-        t.start();
+        serverManager.addImportantEventHandler(importantEventsHandler);
 
         File file = new File(Settings.getMainFolderPath());
         file.mkdirs();
     }
 
+    private void initSwitchOnOffServerListener() {
+        ToggleButton toggle = (ToggleButton) findViewById(R.id.toggleBtnOnOffServer);
+        toggle.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked) {
+                    serverManager.turnOn();
+                } else {
+                    serverManager.turnOff();
+                }
+            }
+        });
+    }
     private void initImportantEventsHandler() {
         importantEventsHandler = new Handler() {
             @Override
@@ -65,7 +69,6 @@ public class MainActivity extends ActionBarActivity {
             }
         };
     }
-
 
     public String getLocalIpAddress()
     {

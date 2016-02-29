@@ -1,5 +1,7 @@
 package stryku.homediscserver;
 
+import android.util.Log;
+
 import org.zeromq.ZMQ;
 import org.zeromq.ZMsg;
 
@@ -19,6 +21,7 @@ public class MessageSender implements Runnable {
         try {
             while(true) {
                 ZMsg msg = new ZMsg();
+                Log.d("MYDEB", "Taking message to send from queue");
                 PersonalMessage pmsg = messagesToSend.take();
 
                 msg.push(pmsg.msg);
@@ -27,7 +30,8 @@ public class MessageSender implements Runnable {
                 msg.send( router );
             }
         } catch (InterruptedException e) {
-            e.printStackTrace();
+            Log.d("MYDEB", "MessageSender taking message interrupted");
+            return;
         }
     }
 

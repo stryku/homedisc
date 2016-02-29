@@ -164,6 +164,7 @@ public class RequestHandler implements Runnable {
             } catch (InterruptedException e) {
                 e.printStackTrace();
                 Log.d("DEB", "Handler thread interrupted");
+                return;
             }
         }
     }

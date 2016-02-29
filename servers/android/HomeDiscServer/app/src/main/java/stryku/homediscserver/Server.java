@@ -6,14 +6,19 @@ import android.util.Log;
 
 import org.zeromq.ZContext;
 import org.zeromq.ZMQ;
+import org.zeromq.ZMQ.PollItem;
+import org.zeromq.ZMQ.Socket;
+import org.zeromq.ZMQ.Poller;
 import org.zeromq.ZMsg;
 
 /**
  * Created by stryku on 14.02.16.
  */
 public class Server implements Runnable {
+    private final static int HEARTBEAT_INTERVAL = 1000;
+
     private ZContext context = new ZContext( 1 );
-    private ZMQ.Socket router;
+    private Socket router;
     private MessageSender sender = new MessageSender();
     private RequestHandler requestHandler = new RequestHandler();
 
@@ -25,12 +30,11 @@ public class Server implements Runnable {
     @Override
     public void run()
     {
-        System.out.print("siema");
+        Log.d("MYDEB", "Server started");
         router.bind( String.format( "tcp://*:%d", Settings.getPort() ) );
-        ZMsg identity = new ZMsg();
+        ZMsg identity;
         Thread senderThread;
         Thread requestHandlerThread;
-        String msg;
 
         sender.setRouter(router);
         requestHandler.setSender(sender);
@@ -41,16 +45,47 @@ public class Server implements Runnable {
         senderThread.start();
         requestHandlerThread.start();
 
-        while(true) {
-            identity = ZMsg.recvMsg(router);
-            //msg = router.recvStr();
+        while(!Thread.interrupted()) {
+            PollItem items[] = {new PollItem(router, Poller.POLLIN)};
+            int rc = ZMQ.poll(items, HEARTBEAT_INTERVAL);
+            if(rc == -1)
+                break;
 
-            Log.d("DEB", identity.toString());
+            if(items[0].isReadable()) {
+                identity = ZMsg.recvMsg(router);
 
-            PersonalMessage request = new PersonalMessage(identity.duplicate());
+                if(identity == null)
+                    Log.d("MYDEB", "Received null message");
+                else {
+                    Log.d("MYDEB", identity.toString());
 
-            requestHandler.newRequest(request);
+                    PersonalMessage request = new PersonalMessage(identity.duplicate());
+
+                    requestHandler.newRequest(request);
+                }
+            }
         }
+
+        Log.d("MYDEB", "Interrupting sender and request handler threads");
+        senderThread.interrupt();
+        requestHandlerThread.interrupt();
+
+        try {
+            senderThread.join();
+            Log.d("MYDEB", "Succeed joining sender thread");
+        } catch (InterruptedException e) {
+            Log.d("MYDEB", "Failed joining sender thread");
+            e.printStackTrace();
+        }
+        try {
+            requestHandlerThread.join();
+            Log.d("MYDEB", "Succeed joining request handler thread");
+        } catch (InterruptedException e) {
+            Log.d("MYDEB", "Failed joining request handler thread");
+            e.printStackTrace();
+        }
+
+        Log.d("MYDEB", "Server thread stopped correctly");
     }
 
     public void addImportantEventHandler(Handler handler) {
