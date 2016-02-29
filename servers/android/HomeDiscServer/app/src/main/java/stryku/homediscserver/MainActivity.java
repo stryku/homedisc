@@ -52,7 +52,7 @@ public class MainActivity extends ActionBarActivity {
         t = new Thread(server);
         t.start();
 
-        File file = new File(Settings.getMainFolderPath());//todo
+        File file = new File(Settings.getMainFolderPath());
         file.mkdirs();
     }
 

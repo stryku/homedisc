@@ -16,10 +16,8 @@ public class MessageSender implements Runnable {
     @Override
     public void run()
     {
-        try
-        {
-            while( true )//TODO brackets
-            {
+        try {
+            while(true) {
                 ZMsg msg = new ZMsg();
                 PersonalMessage pmsg = messagesToSend.take();
 
@@ -27,7 +25,6 @@ public class MessageSender implements Runnable {
                 msg.wrap(pmsg.identity);
 
                 msg.send( router );
-                //router.send(msg.msg);
             }
         } catch (InterruptedException e) {
             e.printStackTrace();
