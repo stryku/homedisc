@@ -31,21 +31,23 @@ public class ResponseBuilder {
     }
 
     public String build() {
-        String response = "<resp>";
+        StringBuilder response = new StringBuilder();
 
-        response += String.format("<succeed>%s</succeed>", String.valueOf(succeed));
+        response.append("<resp>");
+
+        response.append(String.format("<succeed>%s</succeed>", String.valueOf(succeed)));
 
         if(path != null)
-            response += String.format("<path>%s</path>", path);
+            response.append(String.format("<path>%s</path>", path));
 
         if(file != null)
-            response += String.format("<file>%s</file>", file);
+            response.append(String.format("<file>%s</file>", file));
 
         if(filesystemEntryList != null)
-            response += String.format("<fel>%s</fel>", filesystemEntryList);
+            response.append(String.format("<fel>%s</fel>", filesystemEntryList));
 
-        response += "</resp>";
+        response.append("</resp>");
 
-        return response;
+        return response.toString();
     }
 }

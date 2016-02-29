@@ -40,11 +40,6 @@ public class IOUtil {
         }
     }
 
-    static public String readFileToString(String path) throws IOException {
-        byte[] bytes = readFile(path);
-        return new String(bytes);
-    }
-
     static public String md5OfFile(String path) {
         String result = null;
 
@@ -62,12 +57,6 @@ public class IOUtil {
             e.printStackTrace();
         }
 
-        /*mdEnc.update(fileContent.getBytes(), 0, fileContent.length());
-        String md5 = new BigInteger(1, mdEnc.digest()).toString(16);
-        while ( md5.length() < 32 ) {
-            md5 = "0"+md5;
-        }
-        return md5;*/
         return result;
     }
 

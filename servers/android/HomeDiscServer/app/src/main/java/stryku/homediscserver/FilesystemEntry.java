@@ -35,13 +35,13 @@ public class FilesystemEntry {
     }
 
     public String toXml() {
-        String xml = "";
+        StringBuilder xml = new StringBuilder();
 
-        xml += String.format("<path>%s</path>", path);
-        xml += String.format("<md5>%s</md5>", md5);
-        xml += String.format("<moddate>%s</moddate>", modificationDate);
-        xml += String.format("<type>%s</type>", type.toString());
+        xml.append(String.format("<path>%s</path>", path))
+           .append(String.format("<md5>%s</md5>", md5))
+           .append(String.format("<moddate>%s</moddate>", modificationDate))
+           .append(String.format("<type>%s</type>", type.toString()));
 
-        return xml;
+        return xml.toString();
     }
 }

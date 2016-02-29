@@ -30,14 +30,11 @@ public class FilesystemEntryList {
     }
 
     public String toXml() {
-        String xml = new String();
+        StringBuilder xml = new StringBuilder();
 
-        for(FilesystemEntry entry : entries) {
+        for(FilesystemEntry entry : entries)
+            xml.append(String.format("<entry>%s</entry>", entry.toXml()));
 
-            xml += "<entry>" + entry.toXml() + "</entry>";
-        }
-
-
-        return xml;
+        return xml.toString();
     }
 }
