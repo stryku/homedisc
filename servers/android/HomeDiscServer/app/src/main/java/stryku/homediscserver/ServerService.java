@@ -19,8 +19,7 @@ public class ServerService extends Service {
     private ServerManager serverManager = new ServerManager();
     private Handler importantEventsHandler;
 
-    public ServerService() {
-    }
+    public ServerService() {}
 
     private void initImportantEventsHandler() {
         importantEventsHandler = new Handler() {
@@ -59,7 +58,7 @@ public class ServerService extends Service {
         if(!started) {
             if(intent != null)
                 messenger = (Messenger)intent.getParcelableArrayListExtra("MESSENGER").get(0);
-            
+
             serverManager.turnOn();
             Log.d("MYDEB", "ServerService started");
             started = true;

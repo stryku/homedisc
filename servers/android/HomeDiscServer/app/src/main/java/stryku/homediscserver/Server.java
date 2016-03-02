@@ -95,15 +95,6 @@ public class Server implements Runnable {
             e.printStackTrace();
         }
 
-        Log.d("mydeb", "Unbinding at: " + endpoint);
-
-
-        if(!router.disconnect(endpoint) && !router.unbind(endpoint))
-            Log.d("mydeb", "Unbinding succeed");
-        else
-            Log.d("mydeb", "Unbinding failed.");
-
-
         Log.d("MYDEB", "Server thread stopped correctly");
     }
 
