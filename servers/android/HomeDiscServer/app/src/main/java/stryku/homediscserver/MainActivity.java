@@ -1,10 +1,14 @@
 package stryku.homediscserver;
 
+import android.content.Context;
+import android.content.Intent;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.os.Messenger;
+import android.os.Parcelable;
 import android.support.v7.app.ActionBarActivity;
 import android.text.format.Formatter;
 import android.widget.ArrayAdapter;
@@ -21,8 +25,21 @@ public class MainActivity extends ActionBarActivity {
 
     ArrayList<String> events = new ArrayList<String>();
     ArrayAdapter<String> adapter;
-    private Handler importantEventsHandler;
-    private ServerManager serverManager = new ServerManager();
+
+    private final Messenger messenger = new Messenger(new IncomingHandler());
+
+
+    class IncomingHandler extends Handler {
+        @Override
+        public void handleMessage(Message msg) {
+            switch (msg.what) {
+                case ServerService.MSG_EVENT:
+                    addEventToList(msg.getData().getString("data"));
+                default:
+                    super.handleMessage(msg);
+            }
+        }
+    }
 
 
     @Override
@@ -34,7 +51,7 @@ public class MainActivity extends ActionBarActivity {
                                     android.R.layout.simple_list_item_1,
                                     events);
 
-        initImportantEventsHandler();
+
         initSwitchOnOffServerListener();
 
         ListView lv = (ListView)findViewById(R.id.listViewLatestEvents);
@@ -42,10 +59,27 @@ public class MainActivity extends ActionBarActivity {
 
         setIpAndPort();
 
-        serverManager.addImportantEventHandler(importantEventsHandler);
-
         File file = new File(Settings.getMainFolderPath());
         file.mkdirs();
+
+    }
+
+    private void startServerService() {
+
+        Context context = getApplicationContext();
+        Intent i= new Intent(context, ServerService.class);
+
+        ArrayList<Parcelable> messengerArray= new ArrayList<>();
+        messengerArray.add(messenger);
+
+        i.putParcelableArrayListExtra("MESSENGER", messengerArray);
+        context.startService(i);
+    }
+
+    private void stopServerService() {
+        Context context = getApplicationContext();
+        Intent i= new Intent(context, ServerService.class);
+        context.stopService(i);
     }
 
     private void initSwitchOnOffServerListener() {
@@ -53,22 +87,14 @@ public class MainActivity extends ActionBarActivity {
         toggle.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (isChecked) {
-                    serverManager.turnOn();
+                    startServerService();
                 } else {
-                    serverManager.turnOff();
+                    stopServerService();
                 }
             }
         });
     }
-    private void initImportantEventsHandler() {
-        importantEventsHandler = new Handler() {
-            @Override
-            public void handleMessage(Message msg) {
-                addEventToList((String)msg.obj);
-                super.handleMessage(msg);
-            }
-        };
-    }
+
 
     public String getLocalIpAddress()
     {

@@ -11,6 +11,9 @@ import org.zeromq.ZMQ.Socket;
 import org.zeromq.ZMQ.Poller;
 import org.zeromq.ZMsg;
 
+import java.util.Formatter;
+import java.util.Locale;
+
 /**
  * Created by stryku on 14.02.16.
  */
@@ -30,8 +33,15 @@ public class Server implements Runnable {
     @Override
     public void run()
     {
-        Log.d("MYDEB", "Server started");
-        router.bind( String.format( "tcp://*:%d", Settings.getPort() ) );
+        StringBuilder sb = new StringBuilder();
+        Formatter formatter = new Formatter(sb, Locale.US);
+        formatter.format("tcp://*:%d", Settings.getPort());
+
+        final String endpoint = sb.toString();
+
+        Log.d("MYDEB", "Server started. binding at: " + endpoint);
+
+        router.bind(endpoint);
         ZMsg identity;
         Thread senderThread;
         Thread requestHandlerThread;
@@ -84,6 +94,15 @@ public class Server implements Runnable {
             Log.d("MYDEB", "Failed joining request handler thread");
             e.printStackTrace();
         }
+
+        Log.d("mydeb", "Unbinding at: " + endpoint);
+
+
+        if(!router.disconnect(endpoint) && !router.unbind(endpoint))
+            Log.d("mydeb", "Unbinding succeed");
+        else
+            Log.d("mydeb", "Unbinding failed.");
+
 
         Log.d("MYDEB", "Server thread stopped correctly");
     }

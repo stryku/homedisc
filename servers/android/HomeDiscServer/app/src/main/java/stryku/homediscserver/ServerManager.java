@@ -7,14 +7,11 @@ import android.util.Log;
  * Created by stryku on 29.02.16.
  */
 public class ServerManager {
-    private Thread t;
-    private Server server;
+    private Server server = new Server();
+    private Thread t = new Thread(server);
     private Handler importantEventsHandler;
 
-    public ServerManager() {
-        server = new Server();
-        t = new Thread(server);
-    }
+    public ServerManager() {}
 
     public void addImportantEventHandler(Handler handler) {
         server.addImportantEventHandler(handler);
