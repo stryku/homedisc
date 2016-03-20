@@ -27,7 +27,7 @@
             android:name=".ServerService"
             android:enabled="true"
             android:exported="true"
-            android:process=":Siema">
+            android:process=":ServerServiceProcess">
         </service>
     </application>
 
